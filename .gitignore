@@ -17,6 +17,9 @@
 *.ipr
 
 
+### webpack ###
+node_modules
+
 ### NetBeans ###
 /nbproject/private/
 /build/

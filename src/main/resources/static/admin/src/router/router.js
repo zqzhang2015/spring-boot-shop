@@ -11,6 +11,9 @@ import UserEdit from '../components/user/Edit'
 import MenuList from '../components/auth/MenuList'
 import AuthGroup from '../components/auth/AuthGroup'
 import EditAuthValue from '../components/auth/EditAuthValue'
+import GoodsList from '../components/goods/List'
+import GoodsEdit from '../components/goods/Edit'
+
 const routes = [
     {
         path: '/user',
@@ -56,6 +59,24 @@ const routes = [
             },{
                 path: 'editAuthValue',
                 component:  EditAuthValue
+            }
+        ]
+    },
+    {
+        path: '/goods',
+        component: GoodsList,
+        children: [
+            {
+                path : 'list',
+                component: GoodsList
+            },
+            {
+                path : 'add',
+                component: GoodsEdit
+            },
+            {
+                path : 'edit',
+                component: GoodsEdit
             }
         ]
     }

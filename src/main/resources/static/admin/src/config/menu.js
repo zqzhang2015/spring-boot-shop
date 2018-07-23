@@ -1,4 +1,19 @@
 export default {
+    编辑商品: {
+        name: '编辑商品',
+        path: '/goods/edit',
+        componentName: 'GoodsEdit'
+    },
+    添加商品: {
+        name: '添加商品',
+        path: '/goods/add',
+        componentName: 'GoodsEdit'
+    },
+    商品列表: {
+        name: '商品列表',
+        path: '/goods/list',
+        componentName: 'GoodsList'
+    },
     编辑权限: {
         name: '编辑权限',
         path: '/auth/editAuthValue',

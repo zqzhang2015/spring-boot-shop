@@ -110,9 +110,27 @@
     import AuthGroupEdit from './components/auth/AuthGroupEdit'
     import EditAuthValue from './components/auth/EditAuthValue'
 
+    import GoodsList from './components/goods/List'
+    import GoodsEdit from './components/goods/Edit'
+    import GoodsAdd from './components/goods/Edit'
+
     export default {
 
-        components: {Home, UserList, EnterpriseList, EnterpriseEdit,UserInfo, UserEdit, MenuList, AuthGroup, AuthGroupEdit, EditAuthValue},
+        components: {
+            Home,
+            UserList,
+            EnterpriseList,
+            EnterpriseEdit,
+            UserInfo,
+            UserEdit,
+            MenuList,
+            AuthGroup,
+            AuthGroupEdit,
+            EditAuthValue,
+            GoodsList,
+            GoodsAdd,
+            GoodsEdit,
+        },
         data() {
             return {
                 loginWindow: false, // false不显示登录窗口，true显示
@@ -159,6 +177,16 @@
                                 itemIndex: '/auth/authgroup',
                                 itemName: '权限组管理'
                             }
+                        ]
+                    },
+                    {
+                        menuIndex: 'goods',
+                        menuName: '商品管理',
+                        menuItems: [
+                            {
+                                itemIndex: '/goods/list',
+                                itemName: '商品列表'
+                            },
                         ]
                     }
                 ],
@@ -325,8 +353,18 @@
                 }else if (key.length >= '/auth/editAuthValue'.length &&
                     key.substring(0, '/auth/editAuthValue'.length) === '/auth/editAuthValue') {
                     this.addTab('编辑权限');
+                }else if (key.length >= '/goods/list'.length &&
+                    key.substring(0, '/goods/list'.length) === '/goods/list') {
+                    this.addTab('商品列表');
                 }
-
+                else if (key.length >= '/goods/add'.length &&
+                    key.substring(0, '/goods/add'.length) === '/goods/add') {
+                    this.addTab('添加商品');
+                }
+                else if (key.length >= '/goods/edit'.length &&
+                    key.substring(0, '/goods/edit'.length) === '/goods/edit') {
+                    this.addTab('编辑商品');
+                }
                 this.$router.push(key)
 
             }

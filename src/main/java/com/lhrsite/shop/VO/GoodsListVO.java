@@ -1,42 +1,42 @@
-package com.lhrsite.shop.entity;
-
+package com.lhrsite.shop.VO;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Entity
 @Data
-public class Goods implements Serializable {
+public class GoodsListVO {
 
-    @Id
     private String goodsId;
     private String title;
-    private String describe;
     private BigDecimal originalPrice;
+
     private BigDecimal salePrice;
+
     private Integer saleStatus;
+
     private String cover;
+    /** 状态 */
     private Integer status;
+    /** 库存 */
     private Integer stock;
+
+    /** 月销量 */
     private Integer salesVolume;
+
     private String deliveryPlace;
-    private BigDecimal despatchMoney;
-    private String pictures;
-    private String content;
+
+//    /* 发货地 */
+//    private BigDecimal despatchMoney;
     private Integer updateUser;
-    @Column(insertable = false, updatable = false)
+
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
-    @Column(insertable = false, updatable = false)
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.lhrsite.shop.VO;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import lombok.Data;
 
 import java.util.List;
@@ -30,4 +31,16 @@ public class PageVO<T> {
             this.totalPage += 1;
         }
     }
+
+    public void init(JPAQuery<T> tjpaQuery, long currentPage){
+        arr = tjpaQuery.fetch();
+        totalCount = tjpaQuery.fetchCount();
+        this.currentPage = currentPage;
+        this.totalPage = totalCount / pageSize;
+        this.currentNumber = arr.size();
+        if (totalCount % pageSize > 0){
+            this.totalPage += 1;
+        }
+    }
+
 }

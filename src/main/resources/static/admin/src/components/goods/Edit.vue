@@ -5,24 +5,27 @@
             <!--<el-button style="float: right; padding: 3px 0" type="text">编辑</el-button>-->
         </div>
 
-        <el-form ref="user" :model="user" :rules="rules" label-width="80px" >
-            <el-form-item label="用户账号" prop="username">
-                <el-input size="mini" v-model="user.username" placeholder="请输入用户名"></el-input>
+        <el-form ref="user" :model="goods" :rules="rules" label-width="80px" >
+            <el-form-item label="商品标题" prop="username">
+                <el-input size="mini" v-model="goods.title" placeholder="请输入商品标题"></el-input>
             </el-form-item>
-            <el-form-item label="用户密码" prop="password" v-show="isShow">
-                <el-input size="mini" v-model="user.password" type="password" placeholder="请输入密码"></el-input>
+            <el-form-item label="商品描述" prop="describe">
+                <el-input size="mini" v-model="goods.describe" type="textarea" placeholder="请输入商品描述"></el-input>
             </el-form-item>
-            <el-form-item label="确认密码" prop="confirmPassword" v-show="isShow">
-                <el-input size="mini" v-model="user.confirmPassword" type="password" placeholder="请输入确认密码"></el-input>
+            <el-form-item label="原价" prop="originalPrice">
+                <el-input size="mini" v-model="goods.originalPrice" type="text" placeholder="请输入原价"></el-input>
             </el-form-item>
-            <el-form-item label="手机号" prop="phone">
-                <el-input size="mini" v-model="user.phone" placeholder="请输入手机号"></el-input>
+            <el-form-item label="活动价" prop="salePrice">
+                <el-input size="mini" v-model="goods.salePrice" placeholder="请输入活动价"></el-input>
+            </el-form-item>
+            <el-form-item label="开启活动价" prop="saleStatus">
+                <el-switch size="mini" v-model="goods.saleStatus"></el-switch>
             </el-form-item>
             <el-form-item label="用户邮箱" prop="email">
-                <el-input size="mini" v-model="user.email" placeholder="请输入用户邮箱"></el-input>
+                <el-input size="mini" v-model="goods.email" placeholder="请输入用户邮箱"></el-input>
             </el-form-item>
             <el-form-item label="所属企业" prop="epShortname">
-                <el-input size="mini" v-model="user.epShortname" placeholder="请选择企业" v-on:input="loadAll" :disabled="disable">
+                <el-input size="mini" v-model="goods.epShortname" placeholder="请选择企业" v-on:input="loadAll" :disabled="disable">
                     <!-- <el-option v-for="enterprise in enterpriseList" :label="enterprise.name" :value="enterprise.id"></el-option> -->
                 </el-input>
                 <ul id="ul_eqShortname">
@@ -52,7 +55,7 @@
         name: "GoodsEdit",
         data(){
             /* 验证密码 */
-            var validatePass2 = (rule, value, callback) => {
+            const validatePass2 = (rule, value, callback) => {
                 if (value !== this.user.password) {
                     callback(new Error('两次输入密码不一致!'));
                 } else {
@@ -60,17 +63,17 @@
                 }
             };
             // 验证手机号是否存在
-            var checkPhone = (rule, value, callback) => {
+            const checkPhone = (rule, value, callback) => {
                 // console.log(this.currPhone,'>>>>>',value);
                 // 点击用户自己的手机号注册不做已经注册处理
-                if ( this.currPhone == value ){
+                if (this.currPhone === value) {
                     callback();
-                }else{
-                    httpUtil.post(this, 'user', 'phoneIsExist', { "phone": value } , function (resp) {
-                        if( resp.body.code === 0 ){
+                } else {
+                    httpUtil.post(this, 'user', 'phoneIsExist', {"phone": value}, function (resp) {
+                        if (resp.body.code === 0) {
                             console.log("okok");
                             callback();
-                        }else{
+                        } else {
                             callback(new Error('手机号已存在!'));
                         }
                     })
@@ -87,60 +90,45 @@
                 userStatusSelect:{lable: '启用', value: 0},
                 isShow: true,
                 currPhone:'',  // 点击编辑后对应用户的手机号
-                user: {
-                    uid: 0,
-                    username:'',
-                    password:'',
-                    confirmPassword:'',
-                    phone:'',
-                    enterprise:'',
-                    email: '',
-                    eid: 0,
-                    epShortname: '',
-                    // userEnterprise:{
-                    //     enterpriseId: ''
-                    // },
-                    status: {
-                        lable: '启用',
-                        value: '启用'
-                    },
-                },
                 // enterpriseList:[],
                 rules: {
                     username: [
-                        { required: true, message: '请输入用户名', trigger: 'blur' },
-                        { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' },
-                        { validator: this.Validate.checkSpace, trigger: 'blur' }
+                        {required: true, message: '请输入用户名', trigger: 'blur'},
+                        {min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur'},
+                        {validator: this.Validate.checkSpace, trigger: 'blur'}
                     ],
-                    password:[
-                        { required: true, message: '请输入密码', trigger: 'blur' },
-                        { validator: this.Validate.checkPass, trigger: 'blur' },
-                        { min: 2, max: 128, message: '长度在 2 到 128 个字符', trigger: 'blur' }
+                    password: [
+                        {required: true, message: '请输入密码', trigger: 'blur'},
+                        {validator: this.Validate.checkPass, trigger: 'blur'},
+                        {min: 2, max: 128, message: '长度在 2 到 128 个字符', trigger: 'blur'}
                     ],
-                    confirmPassword:[
-                        { required: true, message: '请再次输入密码', trigger: 'blur' },
-                        { validator: validatePass2, trigger: ['blur', 'change']  }
+                    confirmPassword: [
+                        {required: true, message: '请再次输入密码', trigger: 'blur'},
+                        {validator: validatePass2, trigger: ['blur', 'change']}
                     ],
-                    phone:[
-                        { required: true, message: '请输入手机号', trigger: 'blur' },
-                        { max: 20, message: '长度最大为 20 个字符', trigger: 'blur' },
-                        { validator: checkPhone, trigger: 'blur'},
-                        { validator: this.Validate.checkIllegal , trigger: ['blur', 'change']  },
+                    phone: [
+                        {required: true, message: '请输入手机号', trigger: 'blur'},
+                        {max: 20, message: '长度最大为 20 个字符', trigger: 'blur'},
+                        {validator: checkPhone, trigger: 'blur'},
+                        {validator: this.Validate.checkIllegal, trigger: ['blur', 'change']},
                         //    { validator: this.Validate.checkSpace , trigger: ['blur', 'change']  }
                     ],
-                    email:[
-                        { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-                        { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                    email: [
+                        {required: true, message: '请输入邮箱地址', trigger: 'blur'},
+                        {type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change']}
                     ],
-                    enterprise:[
-                        { required: true, message: '请选择一个企业', trigger: 'blur' }
+                    enterprise: [
+                        {required: true, message: '请选择一个企业', trigger: 'blur'}
                     ],
-                    authGroup:[
-                        { required: true, message: '请选择权限组', trigger: 'blur' }
+                    authGroup: [
+                        {required: true, message: '请选择权限组', trigger: 'blur'}
                     ],
-                    status:[
-                        { required: true, message: '请选择启用状态', trigger: 'blur' }
+                    status: [
+                        {required: true, message: '请选择启用状态', trigger: 'blur'}
                     ]
+                },
+                goods:{
+
                 }
             }
         },
@@ -150,19 +138,23 @@
         methods:{
             // 根据点击添加用户或者编辑用户，标题的替换。
             titleSelect() {
-                const uid = sessionStorage.getItem("userListUID");
-                const phone = sessionStorage.getItem("userListPhone");
-                this.$set(this.$data.user, 'uid', uid);
-                this.currPhone = phone;
-                console.log(this.currPhone);
-                if (uid !== 'undefined') {
-                    this.$set(this.$data,'title','编辑用户');
-                    this.$set(this.$data,'isShow',false);
+                const goodsId = sessionStorage.getItem("goodsIdEdit");
+                console.log(goodsId)
+
+                this.$set(this.$data.goods, 'goodsId', goodsId==='undefined'? null : goodsId);
+
+                if (goodsId !== 'undefined') {
+                    //this.$set(this.$data.user, 'uid', uid);
+                    this.$set(this.$data,'title','编辑商品')
                     this.loadData();
                 }else{
-                    this.$set(this.$data,'title','添加用户')
-                    this.$set(this.$data.user,'uid',null)
+                    this.$set(this.$data,'title','添加商品')
+                    this.$set(this.$data.goods,'goodsId',null)
                 }
+
+                // clear goodsIdEdit
+                sessionStorage.setItem("goodsIdEdit", 'undefined');
+
             },
             // 企业关键词搜索，下拉
             loadAll() {
@@ -170,7 +162,7 @@
                 const that = this;
                 //console.log(this.$data.user.epShortname);
                 if(this.$data.user.epShortname !== undefined && this.$data.user.epShortname.length > 0){
-                    httpUtil.get(this, 'enterprise', "getEnterpriseDropDown?keyword="+this.$data.user.epShortname, function(resp) {
+                    httpUtil.post(this, 'goods', "info", this.$data.goods.goodsId, function(resp) {
                         let epArr= JSON.parse(resp.body.data);
                         that.$set(that.$data, 'eqData', epArr);
                         console.log(that.eqData)

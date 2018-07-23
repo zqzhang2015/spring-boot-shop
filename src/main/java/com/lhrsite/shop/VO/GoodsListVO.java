@@ -32,6 +32,9 @@ public class GoodsListVO {
 //    private BigDecimal despatchMoney;
     private Integer updateUser;
 
+    private String updateUserName;
+
+
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     @JSONField(format="yyyy-MM-dd HH:mm:ss")

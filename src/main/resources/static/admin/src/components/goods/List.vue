@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template >
     <el-card class="box-card" shadow="never">
         <div slot="header" class="clearfix">
@@ -11,32 +12,8 @@
             </template>
 
             <el-form :inline="true" :model="param" class="demo-form-inline">
-                <el-form-item label="用户名">
-                    <el-input size="mini" v-model="param.username" placeholder="可模糊关键字"></el-input>
-                </el-form-item>
-                <el-form-item label="手机号">
-                    <el-input size="mini" v-model="param.phoneNum" placeholder="可模糊关键字"></el-input>
-                </el-form-item>
-                <el-form-item label="邮箱">
-                    <el-input size="mini" v-model="param.email" placeholder="可模糊关键字"></el-input>
-                </el-form-item>
-                <el-form-item label="企业">
-                    <el-select
-                            v-model="param.enterpriseId"
-                            filterable
-                            remote
-                            reserve-keyword
-                            placeholder="请输入关键词"
-                            :remote-method="querySearchAsync"
-                            :loading="loading"
-                            size="mini">
-                        <el-option
-                                v-for="item in enterpriseList"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                        </el-option>
-                    </el-select>
+                <el-form-item label="商品标题">
+                    <el-input size="mini" v-model="param.title" placeholder="可模糊关键字"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button size="mini" type="primary" plain icon="el-icon-search" @click="onSubmit">查询</el-button>
@@ -59,30 +36,55 @@
             </el-table-column>
             <el-table-column
                     fixed
-                    prop="uid"
-                    label="#"
+                    prop="title"
+                    label="商品标题"
                     width="70">
             </el-table-column>
             <el-table-column
                     fixed
-                    prop="username"
-                    label="用户名"
+                    prop="originalPrice"
+                    label="原价"
                     width="100" >
             </el-table-column>
             <el-table-column
-                    prop="phone"
-                    label="手机号"
+                    prop="salePrice"
+                    label="活动价"
                     width="130">
             </el-table-column>
             <el-table-column
-                    prop="enterpriseName"
-                    label="所属企业"
+                    prop="saleStatus"
+                    label="活动否"
                     width="160">
             </el-table-column>
             <el-table-column
-                    prop="email"
-                    label="邮箱"
+                    prop="cover"
+                    label="商品封面"
                     width="200">
+            </el-table-column>
+            <el-table-column
+                    prop="status"
+                    label="创建时间"
+                    width="70">
+            </el-table-column>
+            <el-table-column
+                    prop="stock"
+                    label="库存"
+                    width="70">
+            </el-table-column>
+            <el-table-column
+                    prop="salesVolume"
+                    label="月销量"
+                    width="70">
+            </el-table-column>
+            <el-table-column
+                    prop="deliveryPlace"
+                    label="发货地"
+                    width="70">
+            </el-table-column>
+            <el-table-column
+                    prop="updateUserName"
+                    label="更新人"
+                    width="70">
             </el-table-column>
             <el-table-column
                     prop="createTime"
@@ -139,10 +141,7 @@
                 param:{
                     page: 1,
                     pageSize: 10,
-                    username: '',
-                    phoneNum: '',
-                    email:'',
-                    enterpriseId: '',
+                    title: '',
                 },
                 formInline: {
                     user: '',
@@ -203,7 +202,7 @@
             loadData() {
                 const that = this;
                 this.$set(this.$data, 'loading', true);
-                httpUtil.post(this, 'user', "userList", this.$data.param, function (resp) {
+                httpUtil.post(this, 'goods', "list", this.$data.param, function (resp) {
                     // let aa = JSON.parse(resp.data.data);
                     //  console.log(aa);
                     const data = JSON.parse(resp.body.data);
@@ -224,7 +223,7 @@
                 // console.log(row);
                 // this.clickPhone = row.phone;
                 // console.log(this.clickPhone)
-                sessionStorage.setItem("goodsListUID", row.uid);
+                sessionStorage.setItem("goodsIdEdit", row.uid);
                 this.$emit('eleven', '/goods/edit/');
                 //console.log(row.ui
             },

@@ -38,6 +38,8 @@ public enum ErrEumn {
     ADD_USER_PHONE_EXIST(-10022, "手机号已注册！"),
 
 
+    UPLOAD_ERROR_FILE_NULL(-100023, "文件不能为空"),
+    UPLOAD_ERROR(-100023, "上传文件失败")
 
 
 

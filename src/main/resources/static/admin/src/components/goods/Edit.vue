@@ -5,12 +5,12 @@
             <!--<el-button style="float: right; padding: 3px 0" type="text">编辑</el-button>-->
         </div>
 
-        <el-form ref="user" :model="goods" :rules="rules" label-width="80px" >
+        <el-form ref="goods" :model="goods" label-width="80px" >
             <el-form-item label="商品标题" prop="username">
                 <el-input size="mini" v-model="goods.title" placeholder="请输入商品标题"></el-input>
             </el-form-item>
             <el-form-item label="商品描述" prop="describe">
-                <el-input size="mini" v-model="goods.describe" type="textarea" placeholder="请输入商品描述"></el-input>
+                <el-input size="mini" v-model="goods.describe" style="width: 200px" type="textarea" placeholder="请输入商品描述"></el-input>
             </el-form-item>
             <el-form-item label="原价" prop="originalPrice">
                 <el-input size="mini" v-model="goods.originalPrice" type="text" placeholder="请输入原价"></el-input>
@@ -18,31 +18,35 @@
             <el-form-item label="活动价" prop="salePrice">
                 <el-input size="mini" v-model="goods.salePrice" placeholder="请输入活动价"></el-input>
             </el-form-item>
-            <el-form-item label="开启活动价" prop="saleStatus">
+            <el-form-item label="开启活动" prop="saleStatus">
                 <el-switch size="mini" v-model="goods.saleStatus"></el-switch>
             </el-form-item>
-            <el-form-item label="用户邮箱" prop="email">
-                <el-input size="mini" v-model="goods.email" placeholder="请输入用户邮箱"></el-input>
+            <el-form-item label="商品封面" prop="cover">
+                <el-upload
+                        class="upload-demo"
+                        :action="coverUploadUrl"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :on-success="coverSuccess"
+                        :file-list="coverImages"
+                        multiple="false"
+                        list-type="picture">
+                    <el-button size="small" type="primary">点击上传</el-button>
+                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                </el-upload>
             </el-form-item>
-            <el-form-item label="所属企业" prop="epShortname">
-                <el-input size="mini" v-model="goods.epShortname" placeholder="请选择企业" v-on:input="loadAll" :disabled="disable">
-                    <!-- <el-option v-for="enterprise in enterpriseList" :label="enterprise.name" :value="enterprise.id"></el-option> -->
-                </el-input>
-                <ul id="ul_eqShortname">
-                    <li class="li_eqShortname" v-for='(item,index) in eqData'  @click="changeone(index)">
-                        {{item.epShortName}}
-                    </li>
-                </ul>
+            <el-form-item label="上架" prop="status">
+                <el-switch size="mini" v-model="goods.status"></el-switch>
             </el-form-item>
-            <el-form-item label="启用状态" prop="status">
-                <el-select size="mini" v-model="user.status" placeholder="请选择状态">
-                    <el-option label="启用" :value="0"></el-option>
-                    <el-option label="禁用" :value="1"></el-option>
-                </el-select>
-            </el-form-item>
+            <!--<el-form-item label="启用状态" prop="status">-->
+                <!--<el-select size="mini" v-model="user.status" placeholder="请选择状态">-->
+                    <!--<el-option label="启用" :value="0"></el-option>-->
+                    <!--<el-option label="禁用" :value="1"></el-option>-->
+                <!--</el-select>-->
+            <!--</el-form-item>-->
 
             <el-form-item size="small">
-                <el-button type="primary" size="mini" @click="onSubmit('user')">提交</el-button>
+                <el-button type="primary" size="mini" @click="onSubmit('goods')">提交</el-button>
             </el-form-item>
         </el-form>
     </el-card>
@@ -82,11 +86,13 @@
 
             return{
                 disable: false,
+                coverUploadUrl: httpUtil.baseurl()+'/goods/coverUpload',
                 loading:true,
                 title: '',
                 message: '',
                 eqData: [],
                 param:{},
+                coverImages:[],
                 userStatusSelect:{lable: '启用', value: 0},
                 isShow: true,
                 currPhone:'',  // 点击编辑后对应用户的手机号
@@ -136,6 +142,14 @@
             this.titleSelect();
         },
         methods:{
+            coverSuccess(response, file, fileList){
+                console.log("=====================")
+                console.log(response)
+                console.log(file)
+                console.log(fileList)
+                console.log("=====================")
+
+            },
             // 根据点击添加用户或者编辑用户，标题的替换。
             titleSelect() {
                 const goodsId = sessionStorage.getItem("goodsIdEdit");

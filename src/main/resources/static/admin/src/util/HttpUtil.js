@@ -48,6 +48,8 @@ const httpUtil = {
             })
     },
     post(that, apiPath, url, param, callback){
+        param.token = that.$store.getters.user.token
+        console.log(param)
         that.$http.post(this.baseurl(apiPath) + url, param, {emulateJSON:true})
             .then(response=>{
                 // console.log("response.status => "+response.status )

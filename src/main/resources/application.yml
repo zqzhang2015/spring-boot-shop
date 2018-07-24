@@ -5,8 +5,16 @@ spring:
     password: root
 
   jpa:
-    show-sql: true
+    show-sql: false
     properties:
         hibernate.format_sql: true
 server:
   port: 8088
+
+
+app:
+  upload:
+    shop:
+      cover: /Users/lhr/Desktop/shop/cover_upload/
+
+

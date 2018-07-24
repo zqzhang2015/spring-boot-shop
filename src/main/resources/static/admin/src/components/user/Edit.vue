@@ -63,7 +63,7 @@
             var checkPhone = (rule, value, callback) => {
                     // console.log(this.currPhone,'>>>>>',value);
                 // 点击用户自己的手机号注册不做已经注册处理
-                if ( this.currPhone == value ){
+                if ( this.currPhone === value ){
                     callback();
                 }else{
                     httpUtil.post(this, 'user', 'phoneIsExist', { "phone": value } , function (resp) {

@@ -57,23 +57,24 @@ public class MenuServiceImpl extends BaseServiceImpl implements MenuService {
 
         });
 
-
-
-
-
-
         return result;
+    }
+
+    @Override
+    public List<Menu> getMenusByEnterprise(Integer eid, Integer status) {
+
+        return menuRepository
+                .findAllByMenuStatusAndEnterpriseIn(status, Arrays.asList(eid, 0), Sort.by(Sort.Direction.DESC,
+                                "menuLevel"));
     }
 
     @Override
     public List<Menu> getMenusByEnterprise(Integer eid) {
 
         return menuRepository
-                .findAllByMenuStatusAndEnterpriseIn(
-                        0, Arrays.asList(eid, 0), Sort.by(Sort.Direction.DESC,
-                                "menuLevel"));
+                .findAllByEnterpriseIn(Arrays.asList(eid, 0), Sort.by(Sort.Direction.DESC,
+                        "menuLevel"));
     }
-
     @Override
     public Menu getMenuById(Integer mid) {
         return menuRepository.findById(mid).get();

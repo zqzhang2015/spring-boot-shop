@@ -15,6 +15,9 @@ public interface MenuRepository
 
     List<Menu> findAllByEnterpriseIn(List<Integer> enterprises);
 
+    List<Menu> findAllByEnterpriseIn(List<Integer> enterprises, Sort sort);
+
+
 
 
 }

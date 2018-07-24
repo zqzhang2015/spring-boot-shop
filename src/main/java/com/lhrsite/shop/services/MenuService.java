@@ -12,6 +12,8 @@ public interface MenuService {
 
     List<MenuListVO> getMenuTree(Integer enterprise);
 
+    List<Menu> getMenusByEnterprise(Integer eid, Integer status);
+
     List<Menu> getMenusByEnterprise(Integer eid);
 
     Menu getMenuById(Integer mid);

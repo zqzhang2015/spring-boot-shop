@@ -44,20 +44,56 @@
                     <!--<el-option label="禁用" :value="1"></el-option>-->
                 <!--</el-select>-->
             <!--</el-form-item>-->
-
+            <el-form-item label="库存" prop="stock">
+                <el-input size="mini" v-model="goods.stock" placeholder="库存"></el-input>
+            </el-form-item>
+            <el-form-item label="发货地" prop="deliveryPlace">
+                <el-input size="mini" v-model="goods.deliveryPlace" placeholder="发货地"></el-input>
+            </el-form-item>
+            <el-form-item label="快递费" prop="despatchMoney">
+                <el-input size="mini" v-model="goods.despatchMoney" placeholder="快递费"></el-input>
+            </el-form-item>
+            <el-form-item label="轮播图" prop="pictures">
+                <el-upload
+                        class="upload-demo"
+                        :action="picturesUploadUrl"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :on-success="coverSuccess"
+                        :file-list="picturesImages"
+                        multiple="false"
+                        list-type="picture">
+                    <el-button size="small" type="primary">点击上传</el-button>
+                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                </el-upload>
+            </el-form-item>
             <el-form-item size="small">
                 <el-button type="primary" size="mini" @click="onSubmit('goods')">提交</el-button>
             </el-form-item>
+            <el-form-item label="快递费" prop="despatchMoney">
+                <div class="edit_container">
+                    <quill-editor
+                            v-model="content"
+                            ref="myQuillEditor"
+                            :options="editorOption"
+                            @blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
+                            @change="onEditorChange($event)">
+                    </quill-editor>
+                </div>
+            </el-form-item>
         </el-form>
+
     </el-card>
 </template>
 
 <script>
     import httpUtil from "../../util/HttpUtil.js";
-
+    import { quillEditor } from 'vue-quill-editor'
     export default {
         name: "GoodsEdit",
+
         data(){
+
             /* 验证密码 */
             const validatePass2 = (rule, value, callback) => {
                 if (value !== this.user.password) {
@@ -85,14 +121,24 @@
             };
 
             return{
+                content:null,
+                editorOption:{},
+                infoForm: {
+                    a_title: '',
+                    a_source: '',
+                    a_content:'',
+                    editorOption: {}
+                },
                 disable: false,
                 coverUploadUrl: httpUtil.baseurl()+'/goods/coverUpload',
+                picturesUploadUrl: httpUtil.baseurl()+'/goods/picturesUpload',
                 loading:true,
                 title: '',
                 message: '',
                 eqData: [],
                 param:{},
                 coverImages:[],
+                picturesImages: [],
                 userStatusSelect:{lable: '启用', value: 0},
                 isShow: true,
                 currPhone:'',  // 点击编辑后对应用户的手机号
@@ -140,14 +186,36 @@
         },
         mounted(){
             this.titleSelect();
+
         },
+        computed: {
+            editor() {
+                return this.$refs.myQuillEditor.quill
+            }
+        },
+
         methods:{
+            handlePreview(){
+
+            },
+            handleRemove(){
+
+            },
+            onEditorBlur(){//失去焦点事件
+            },
+            onEditorFocus(){//获得焦点事件
+            },
+            onEditorChange(){//内容改变事件
+            },
             coverSuccess(response, file, fileList){
                 console.log("=====================")
                 console.log(response)
                 console.log(file)
                 console.log(fileList)
                 console.log("=====================")
+
+            },
+            editorOption(){
 
             },
             // 根据点击添加用户或者编辑用户，标题的替换。

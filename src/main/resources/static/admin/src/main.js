@@ -16,7 +16,10 @@ import EditAuthValue from './components/auth/EditAuthValue'
 import Validate from './util/Validate'
 //引入字体图标库
 import "./assets/icomoon/style.css";
-
+import  VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 Vue.use(VueRouter);
 Vue.use(ElementUI);
@@ -25,7 +28,7 @@ Vue.use(VueCookie);
 Vue.use(VueResource);
 Vue.use(Vuex);
 
-
+Vue.use(VueQuillEditor)
 
 Vue.prototype.$menu = menu;
 
@@ -61,7 +64,7 @@ const vum = new Vue({
         'EnterpriseList': EnterpriseList,
         'Home': Home,
         'AuthGroupEdit':AuthGroupEdit,
-        'EeditAuthValue': EditAuthValue
+        'EeditAuthValue': EditAuthValue,
     },
     render: h => h(App)
 });

@@ -29,7 +29,7 @@
                         :on-remove="handleRemove"
                         :on-success="coverSuccess"
                         :file-list="coverImages"
-                        multiple="false"
+                        :multiple="false"
                         list-type="picture">
                     <el-button size="small" type="primary">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -59,9 +59,9 @@
                         :action="picturesUploadUrl"
                         :on-preview="handlePreview"
                         :on-remove="handleRemove"
-                        :on-success="coverSuccess"
+                        :on-success="picturesSuccess"
                         :file-list="picturesImages"
-                        multiple="false"
+                        :multiple="true"
                         list-type="picture">
                     <el-button size="small" type="primary">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -130,8 +130,10 @@
                     editorOption: {}
                 },
                 disable: false,
-                coverUploadUrl: httpUtil.baseurl()+'/goods/coverUpload',
-                picturesUploadUrl: httpUtil.baseurl()+'/goods/picturesUpload',
+                coverUploadUrl: httpUtil.baseurl()+'goods/coverUpload',
+                picturesUploadUrl: httpUtil.baseurl()+'goods/picturesUpload',
+                coverUrl: httpUtil.baseurl()+'goods/cover/',
+                picturesUrl: httpUtil.baseurl()+'goods/pictures/',
                 loading:true,
                 title: '',
                 message: '',
@@ -213,6 +215,24 @@
                 console.log(file)
                 console.log(fileList)
                 console.log("=====================")
+                const data = JSON.parse(response.data);
+                this.coverImages.push({
+                    name:data.file,
+                    url:this.coverUrl + data.file,
+                });
+
+            },
+            picturesSuccess(response, file, fileList){
+                console.log("=====================")
+                console.log(response)
+                console.log(file)
+                console.log(fileList)
+                console.log("=====================")
+                this.picturesImages.push({
+                    name:data.file,
+                    url:this.coverUrl + data.file,
+                });
+
 
             },
             editorOption(){

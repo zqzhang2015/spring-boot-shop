@@ -16,5 +16,6 @@ app:
   upload:
     shop:
       cover: /Users/lhr/Desktop/shop/cover_upload/
+      pictures: /Users/lhr/Desktop/shop/pictures_upload/
 
 

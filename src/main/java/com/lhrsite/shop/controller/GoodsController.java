@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lhrsite.shop.VO.ResultVO;
 import com.lhrsite.shop.entity.Goods;
+import com.lhrsite.shop.entity.Classify;
 import com.lhrsite.shop.enums.ErrEumn;
 import com.lhrsite.shop.exception.ErpException;
+import com.lhrsite.shop.services.ClassifyService;
 import com.lhrsite.shop.services.GoodsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -32,9 +33,12 @@ public class GoodsController {
     private String picturesUploadDir;
     private final GoodsService goodsService;
     private ResultVO resultVO;
+
+    private final ClassifyService classifyService;
     @Autowired
-    public GoodsController(GoodsService goodsService) {
+    public GoodsController(GoodsService goodsService, ClassifyService classifyService) {
         this.goodsService = goodsService;
+        this.classifyService = classifyService;
         resultVO = new ResultVO();
         resultVO.setCode(0);
         resultVO.setMsg("ok");
@@ -55,6 +59,29 @@ public class GoodsController {
     @PostMapping("/info")
     public String info(String goodsId){
         resultVO.setData(JSON.toJSONString(goodsService.getById(goodsId)));
+        return JSON.toJSONString(resultVO);
+    }
+
+    @GetMapping("/classifyTree")
+    public String classifyTree(){
+        resultVO.setData(JSON.toJSONString(classifyService.getClassifyTree()));
+        return JSON.toJSONString(resultVO);
+    }
+
+    @PostMapping("/addClassify")
+    public String add(Classify classify){
+        resultVO.setData(JSON.toJSONString(classifyService.add(classify)));
+        return JSON.toJSONString(resultVO);
+    }
+
+    @PostMapping("/updateClassify")
+    public String updateClassify(Classify classify){
+        resultVO.setData(JSON.toJSONString(classifyService.update(classify)));
+        return JSON.toJSONString(resultVO);
+    }
+    @PostMapping("/delClassify")
+    public String delClassify(Integer clId) throws ErpException {
+        classifyService.del(clId);
         return JSON.toJSONString(resultVO);
     }
 

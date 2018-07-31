@@ -39,10 +39,10 @@ public enum ErrEumn {
 
 
     UPLOAD_ERROR_FILE_NULL(-100023, "文件不能为空"),
-    UPLOAD_ERROR(-100023, "上传文件失败")
+    UPLOAD_ERROR(-100023, "上传文件失败"),
 
 
-
+    CLASSIFY_IS_NOTEXIT(-100024, "分类不存在！"),
 
     ;
 

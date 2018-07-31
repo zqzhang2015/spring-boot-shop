@@ -4,6 +4,7 @@ package com.lhrsite.shop.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.lhrsite.shop.VO.ResultVO;
+import com.lhrsite.shop.entity.Goods;
 import com.lhrsite.shop.enums.ErrEumn;
 import com.lhrsite.shop.exception.ErpException;
 import com.lhrsite.shop.services.GoodsService;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sun.dc.pr.PRError;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -59,15 +59,17 @@ public class GoodsController {
     }
 
 
-    @RequestMapping(value = "/coverUpload", method = RequestMethod.POST)
-    public String coverUpload(@RequestParam(value = "file") MultipartFile file) throws RuntimeException, ErpException {
-        if (file.isEmpty()) {
-            throw new ErpException(ErrEumn.UPLOAD_ERROR_FILE_NULL);
-        }
-        resultVO.setData(JSON.toJSONString(saveFile(coverUploadDir, file)));
-        return JSON.toJSONString(resultVO);
 
+    @PostMapping("/add")
+    public String add(Goods goods){
+        System.out.println(goods);
+        resultVO.setData(JSON.toJSONString(goodsService.addGoods(goods)));
+        return JSON.toJSONString(resultVO);
     }
+
+
+
+
     private JSONObject saveFile(String path, MultipartFile file) throws ErpException {
         String fileName = file.getOriginalFilename();
         System.out.println("上传的文件名为：" + fileName);
@@ -103,16 +105,28 @@ public class GoodsController {
         }
         return jsonObjects;
     }
+
+    @RequestMapping(value = "/coverUpload", method = RequestMethod.POST)
+    public String coverUpload(@RequestParam(value = "file") MultipartFile file)
+            throws RuntimeException, ErpException {
+        if (file.isEmpty()) {
+            throw new ErpException(ErrEumn.UPLOAD_ERROR_FILE_NULL);
+        }
+        resultVO.setData(JSON.toJSONString(saveFile(coverUploadDir, file)));
+        return JSON.toJSONString(resultVO);
+
+    }
+
     @RequestMapping(value = "/picturesUpload", method = RequestMethod.POST)
-    public String picturesUpload(@RequestParam(value = "files") MultipartFile[] files) throws RuntimeException, ErpException {
-        resultVO.setData(JSON.toJSONString(saveFile(picturesUploadDir, files)));
+    public String picturesUpload(@RequestParam(value = "file") MultipartFile file)
+            throws RuntimeException, ErpException {
+        resultVO.setData(JSON.toJSONString(saveFile(picturesUploadDir, file)));
         return JSON.toJSONString(resultVO);
     }
 
     @RequestMapping(value = "/pictures/{fileName}", method = RequestMethod.GET)
     public void pictures(@PathVariable(name = "fileName") String fileName, HttpServletResponse response)
             throws RuntimeException, ErpException {
-
         writeImage(response, fileName, picturesUploadDir);
     }
     @RequestMapping(value = "/cover/{fileName}", method = RequestMethod.GET)
@@ -122,7 +136,7 @@ public class GoodsController {
     }
 
     private void writeImage(HttpServletResponse response, String fileName, String filePath){
-//        System.out.println(filePath + fileName);
+        System.out.println(filePath + fileName);
 
         response.setContentType("image/*");
         try {

@@ -38,10 +38,9 @@
                     fixed
                     prop="title"
                     label="商品标题"
-                    width="70">
+                    min-width="200">
             </el-table-column>
             <el-table-column
-                    fixed
                     prop="originalPrice"
                     label="原价"
                     width="100" >
@@ -56,16 +55,11 @@
                     label="活动否"
                     width="160">
             </el-table-column>
-            <el-table-column
-                    prop="cover"
-                    label="商品封面"
-                    width="200">
-            </el-table-column>
-            <el-table-column
-                    prop="status"
-                    label="创建时间"
-                    width="70">
-            </el-table-column>
+            <!--<el-table-column-->
+                    <!--prop="cover"-->
+                    <!--label="商品封面"-->
+                    <!--width="200">-->
+            <!--</el-table-column>-->
             <el-table-column
                     prop="stock"
                     label="库存"
@@ -99,9 +93,8 @@
             <el-table-column
                     fixed="right"
                     label="操作"
-                    width="200">
+                    width="100">
                 <template slot-scope="scope">
-                    <el-button type="primary" size="mini" plain @click="handleClick(scope.row)">查看</el-button>
                     <el-button type="success" size="mini" plain @click="jumpEdit(scope.row)">编辑</el-button>
                 </template>
             </el-table-column>
@@ -220,10 +213,10 @@
                 })
             },
             jumpEdit(row) {
-                // console.log(row);
+                console.log(row);
                 // this.clickPhone = row.phone;
                 // console.log(this.clickPhone)
-                sessionStorage.setItem("goodsIdEdit", row.uid);
+                sessionStorage.setItem("goodsIdEdit", row.goodsId);
                 this.$emit('eleven', '/goods/edit/');
                 //console.log(row.ui
             },

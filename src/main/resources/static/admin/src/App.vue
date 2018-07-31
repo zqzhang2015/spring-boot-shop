@@ -218,12 +218,14 @@
             };
         },
         mounted() {
-            //console.log(this.store.login)
             const token = this.$cookie.get('token');
-            // auto login
+
             if(token.length > 10){
                 const that = this;
-                httpUtil.post(this, 'user', 'tokenUse', {'token': token},function(data){
+                const sendData = {
+                    'token': token
+                }
+                httpUtil.post(this, 'user', 'tokenUse', sendData, function(data){
                     const dt = data.body;
                     if(dt.code !== 0){
                         return;

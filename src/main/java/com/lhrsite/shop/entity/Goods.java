@@ -4,9 +4,7 @@ package com.lhrsite.shop.entity;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -18,6 +16,7 @@ public class Goods implements Serializable {
     @Id
     private String goodsId;
     private String title;
+    @Column(name = "`describe`")
     private String describe;
     private BigDecimal originalPrice;
     private BigDecimal salePrice;

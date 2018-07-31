@@ -5,17 +5,19 @@ import com.lhrsite.shop.VO.PageVO;
 import com.lhrsite.shop.entity.Goods;
 import com.lhrsite.shop.entity.QGoods;
 import com.lhrsite.shop.entity.QUser;
-import com.lhrsite.shop.repository.EnterpriseRepository;
 import com.lhrsite.shop.repository.GoodsRepository;
 import com.lhrsite.shop.services.GoodsService;
+import com.lhrsite.shop.util.EncryptUtil;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.security.provider.MD5;
 
 import javax.persistence.EntityManager;
+import java.util.UUID;
 
 @Service
 public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
@@ -78,7 +80,9 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
 
     @Override
     public Goods addGoods(Goods goods) {
-        goods.setGoodsId(null);
+        //月销量0
+        goods.setSalesVolume(0);
+        goods.setGoodsId(EncryptUtil.encryptPassword(UUID.randomUUID().toString()));
         return goodsRepository.save(goods);
     }
 

@@ -6,80 +6,86 @@
         </div>
 
         <el-form ref="goods" :model="goods" label-width="80px" >
-            <el-form-item label="商品标题" prop="username">
+            <el-form-item label="商品标题" >
                 <el-input size="mini" v-model="goods.title" placeholder="请输入商品标题"></el-input>
             </el-form-item>
-            <el-form-item label="商品描述" prop="describe">
+            <el-form-item label="商品描述" >
                 <el-input size="mini" v-model="goods.describe" style="width: 200px" type="textarea" placeholder="请输入商品描述"></el-input>
             </el-form-item>
-            <el-form-item label="原价" prop="originalPrice">
+            <el-form-item label="原价" >
                 <el-input size="mini" v-model="goods.originalPrice" type="text" placeholder="请输入原价"></el-input>
             </el-form-item>
-            <el-form-item label="活动价" prop="salePrice">
+            <el-form-item label="活动价" >
                 <el-input size="mini" v-model="goods.salePrice" placeholder="请输入活动价"></el-input>
             </el-form-item>
-            <el-form-item label="开启活动" prop="saleStatus">
-                <el-switch size="mini" v-model="goods.saleStatus"></el-switch>
+            <el-form-item label="开启活动" >
+                <el-switch size="mini" v-model="goods.saleStatusShow"></el-switch>
             </el-form-item>
-            <el-form-item label="商品封面" prop="cover">
-                <el-upload
-                        class="upload-demo"
-                        :action="coverUploadUrl"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :on-success="coverSuccess"
-                        :file-list="coverImages"
-                        :multiple="false"
-                        list-type="picture">
-                    <el-button size="small" type="primary">点击上传</el-button>
-                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-                </el-upload>
+            <el-form-item label="上架" >
+                <el-switch size="mini" v-model="goods.statusShow"></el-switch>
             </el-form-item>
-            <el-form-item label="上架" prop="status">
-                <el-switch size="mini" v-model="goods.status"></el-switch>
-            </el-form-item>
-            <!--<el-form-item label="启用状态" prop="status">-->
+            <!--<el-form-item label="启用状态" >-->
                 <!--<el-select size="mini" v-model="user.status" placeholder="请选择状态">-->
                     <!--<el-option label="启用" :value="0"></el-option>-->
                     <!--<el-option label="禁用" :value="1"></el-option>-->
                 <!--</el-select>-->
             <!--</el-form-item>-->
-            <el-form-item label="库存" prop="stock">
+            <el-form-item label="库存" >
                 <el-input size="mini" v-model="goods.stock" placeholder="库存"></el-input>
             </el-form-item>
-            <el-form-item label="发货地" prop="deliveryPlace">
+            <el-form-item label="发货地" >
                 <el-input size="mini" v-model="goods.deliveryPlace" placeholder="发货地"></el-input>
             </el-form-item>
-            <el-form-item label="快递费" prop="despatchMoney">
-                <el-input size="mini" v-model="goods.despatchMoney" placeholder="快递费"></el-input>
+            <el-form-item label="快递费" >
+                <el-input size="mini" type="number" v-model="goods.despatchMoney" placeholder="快递费"></el-input>
             </el-form-item>
-            <el-form-item label="轮播图" prop="pictures">
+
+            <el-form-item label="商品封面" >
+                <el-upload
+                        class="upload-demo"
+                        :action="coverUploadUrl"
+                        :on-preview="handlePreview"
+                        :on-remove="handleCoverImagesRemove"
+                        :on-success="coverSuccess"
+                        :file-list="coverImages"
+                        :multiple="false"
+                        :before-upload="beforeCoverUpload"
+                        list-type="picture-card">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    <!--<el-button size="small" type="primary">点击上传</el-button>-->
+                    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                </el-upload>
+            </el-form-item>
+            <el-form-item label="轮播图" >
                 <el-upload
                         class="upload-demo"
                         :action="picturesUploadUrl"
                         :on-preview="handlePreview"
-                        :on-remove="handleRemove"
+                        :on-remove="handlePicturesImagesRemove"
                         :on-success="picturesSuccess"
                         :file-list="picturesImages"
-                        :multiple="true"
-                        list-type="picture">
-                    <el-button size="small" type="primary">点击上传</el-button>
+                        :before-upload="beforePicturesUpload"
+                        list-type="picture-card">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    <!--<el-button size="small" type="primary">点击上传</el-button>-->
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
             </el-form-item>
-            <el-form-item size="small">
-                <el-button type="primary" size="mini" @click="onSubmit('goods')">提交</el-button>
-            </el-form-item>
-            <el-form-item label="快递费" prop="despatchMoney">
+            <el-form-item label="商品详情" >
                 <div class="edit_container">
                     <quill-editor
-                            v-model="content"
-                            ref="myQuillEditor"
+                            v-model="goods.content"
+                            ref="qe"
                             :options="editorOption"
                             @blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
                             @change="onEditorChange($event)">
                     </quill-editor>
                 </div>
+            </el-form-item>
+            <el-form-item size="small">
+                <el-button type="primary" size="mini" @click="onSubmit(goods)">提交</el-button>
             </el-form-item>
         </el-form>
 
@@ -129,6 +135,7 @@
                     a_content:'',
                     editorOption: {}
                 },
+                imageUrl: '',
                 disable: false,
                 coverUploadUrl: httpUtil.baseurl()+'goods/coverUpload',
                 picturesUploadUrl: httpUtil.baseurl()+'goods/picturesUpload',
@@ -145,50 +152,36 @@
                 isShow: true,
                 currPhone:'',  // 点击编辑后对应用户的手机号
                 // enterpriseList:[],
-                rules: {
-                    username: [
-                        {required: true, message: '请输入用户名', trigger: 'blur'},
-                        {min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur'},
-                        {validator: this.Validate.checkSpace, trigger: 'blur'}
-                    ],
-                    password: [
-                        {required: true, message: '请输入密码', trigger: 'blur'},
-                        {validator: this.Validate.checkPass, trigger: 'blur'},
-                        {min: 2, max: 128, message: '长度在 2 到 128 个字符', trigger: 'blur'}
-                    ],
-                    confirmPassword: [
-                        {required: true, message: '请再次输入密码', trigger: 'blur'},
-                        {validator: validatePass2, trigger: ['blur', 'change']}
-                    ],
-                    phone: [
-                        {required: true, message: '请输入手机号', trigger: 'blur'},
-                        {max: 20, message: '长度最大为 20 个字符', trigger: 'blur'},
-                        {validator: checkPhone, trigger: 'blur'},
-                        {validator: this.Validate.checkIllegal, trigger: ['blur', 'change']},
-                        //    { validator: this.Validate.checkSpace , trigger: ['blur', 'change']  }
-                    ],
-                    email: [
-                        {required: true, message: '请输入邮箱地址', trigger: 'blur'},
-                        {type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change']}
-                    ],
-                    enterprise: [
-                        {required: true, message: '请选择一个企业', trigger: 'blur'}
-                    ],
-                    authGroup: [
-                        {required: true, message: '请选择权限组', trigger: 'blur'}
-                    ],
-                    status: [
-                        {required: true, message: '请选择启用状态', trigger: 'blur'}
-                    ]
-                },
                 goods:{
-
+                    title:"",
+                    describe:"",
+                    originalPrice: 0.00,
+                    salePrice: 0.00,
+                    saleStatus: 1,
+                    saleStatusShow:false,
+                    status: 0,
+                    statusShow: true,
+                    stock: 0,
+                    deliveryPlace: "本地",
+                    despatchMoney:0.00,
+                    coverImages:"",
+                    cover: '',
+                    pictures:'',
+                    picturesImages:[],
+                    content:'',
                 }
             }
         },
         mounted(){
-            this.titleSelect();
-
+            // this.titleSelect();
+            this.titleSelect()
+            const  cacheGoods = sessionStorage.getItem("cacheGoods");
+            console.log("cacheGoods:"+cacheGoods)
+            if(cacheGoods !== null && cacheGoods !== ""){
+                this.$set(this.$data, "goods", JSON.parse(cacheGoods))
+                this.$set(this.$data, "picturesImages", this.$data.goods.picturesImages)
+                this.$set(this.$data, "coverImages", this.$data.goods.coverImages)
+            }
         },
         computed: {
             editor() {
@@ -197,11 +190,54 @@
         },
 
         methods:{
+            beforePicturesUpload(file) {
+                return this.imgUploadRule(file)
+            },
+            beforeCoverUpload(file) {
+                //当封面有一张上传的图片时禁止上传
+                if (this.coverImages.length >= 1){
+                    this.$message.error('封面只能上传一张！');
+                    return false;
+                }
+                return this.imgUploadRule(file)
+            },
+
+            imgUploadRule(file){
+                const isImage = file.type === 'image/png' || file.type === 'image/jpeg';
+                const isLt10M = file.size / 1024 / 1024 < 10;
+
+                if (!isImage) {
+                    this.$message.error('上传头像图片只能是 JPG 格式!');
+                }
+                if (!isLt10M) {
+                    this.$message.error('上传头像图片大小不能超过 10MB!');
+                }
+                return isImage && isLt10M;
+            },
+
+
             handlePreview(){
 
             },
-            handleRemove(){
-
+            handleCoverImagesRemove(file, fileList){
+                const list = []
+                for (var i = 0; i < fileList.length; i++){
+                    if(fileList[i].uid !== file.uid){
+                        list.push(fileList[i])
+                    }
+                }
+                this.$set(this.$data, "coverImages", list);
+                this.$set(this.$data.goods, "coverImages", list);
+            },
+            handlePicturesImagesRemove(file, fileList){
+                const list = []
+                for (var i = 0; i < fileList.length; i++){
+                    if(fileList[i].uid !== file.uid){
+                        list.push(fileList[i])
+                    }
+                }
+                this.$set(this.$data, "picturesImages", list);
+                this.$set(this.$data.goods, "picturesImages", list);
             },
             onEditorBlur(){//失去焦点事件
             },
@@ -223,14 +259,11 @@
 
             },
             picturesSuccess(response, file, fileList){
-                console.log("=====================")
-                console.log(response)
-                console.log(file)
-                console.log(fileList)
-                console.log("=====================")
+                const data = JSON.parse(response.data);
+
                 this.picturesImages.push({
                     name:data.file,
-                    url:this.coverUrl + data.file,
+                    url:this.picturesUrl + data.file,
                 });
 
 
@@ -241,11 +274,11 @@
             // 根据点击添加用户或者编辑用户，标题的替换。
             titleSelect() {
                 const goodsId = sessionStorage.getItem("goodsIdEdit");
-                console.log(goodsId)
+                console.log("goodsId:"+goodsId)
 
                 this.$set(this.$data.goods, 'goodsId', goodsId==='undefined'? null : goodsId);
 
-                if (goodsId !== 'undefined') {
+                if (goodsId !== 'undefined' && goodsId !== '' && goodsId !== undefined) {
                     //this.$set(this.$data.user, 'uid', uid);
                     this.$set(this.$data,'title','编辑商品')
                     this.loadData();
@@ -281,64 +314,54 @@
                 this.eqData = [];
             },
             // 提交按钮，针对添加用户和编辑用户的判断。
-            onSubmit(formName) {
-                if( this.$data.title === '编辑用户' ){
-                    this.$data.user.password = 'default';
-                    this.$data.user.confirmPassword = 'default';
-                }
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        const uid = sessionStorage.getItem("userListUID");
-                        console.log(uid);
-                        console.log(this.$data.user);
-                        const that = this;
-                        // 判断是否存在uid来确定是添加还是编辑
-                        // 添加用户
-                        if (uid === 'undefined') {
-                            httpUtil.post(this, 'user', 'addUser', this.$data.user, function (resp) {
-                                console.log(resp)
-                                const d2 = JSON.parse(resp.body.data);
-                                console.log(">>>>>===")
-                                console.log(d2);
-                                that.$set(that.$data,'user', d2);
-                                that.$set(that.$data.user,'epShortname', d2.enterpriseName);
-                                if(resp.body.code === 0) {
-                                    that.successMsg("添加用户成功");
-                                    that.$set(that.$data,'user', {});
-                                }
-                            })
-                        }else{
-                            // 编辑用户
-                            httpUtil.post(this, 'user', 'editUser', this.$data.user, function (resp) {
-                                console.log(resp)
-                                const d1 = JSON.parse(resp.body.data);
-                                console.log(d1);
-                                that.$set(that.$data,'user', d1);
-                                that.$set(that.$data.user,'epShortname', d1.enterpriseName);
-                                if(resp.body.code === 0) {
-                                    that.successMsg("编辑用户成功")
-                                }
-                            })
-                        }
-                    } else {
-                        return false;
-                    }
-                });
+            onSubmit(goods) {
+                // 缓存表单，如果出现提交失败还原表单
+                console.log(this.picturesImages)
+                this.$set(this.$data.goods,"coverImages", this.coverImages);
+                this.$set(this.$data.goods,"picturesImages", this.picturesImages);
+                this.$set(this.$data.goods,"saleStatus", this.$data.goods.saleStatusShow?0:1)
+                this.$set(this.$data.goods,"status", this.$data.goods.statusShow?0:1)
+                this.$set(this.$data.goods,"cover", this.$data.goods.coverImages[0].url);
+                this.$set(this.$data.goods,"pictures", JSON.stringify(this.$data.goods.picturesImages))
+                this.$set(this.$data.goods,"updateUser", this.$store.getters.user.uid)
 
+
+                // this.$set(this.$data.goods,"content", this.$refs.qe.editor.getContents())
+
+
+                const cacheGoods = JSON.stringify(this.goods);
+                console.log("cacheGoods:" + cacheGoods);
+                sessionStorage.setItem("cacheGoods", cacheGoods);
+                console.log(this.goods)
+
+                const that = this;
+                httpUtil.post(this, 'goods', 'add', this.$data.goods, function (resp) {
+                    console.log(resp);
+                    that.successMsg("添加成功！")
+                    // 添加成功清楚缓存
+                    sessionStorage.setItem("cacheGoods","");
+                })
             },
             loadData(){
                 const that = this;
                 this.$set(this.$data, 'loading', true);
-                const uid = sessionStorage.getItem("userListUID");
-                httpUtil.post(this, 'user', "getUser", {uid:uid}, function (resp) {
+                const goodsIdEdit = sessionStorage.getItem("goodsIdEdit");
+                httpUtil.post(this, 'goods', "info", {goodsId:goodsIdEdit}, function (resp) {
                     const data = JSON.parse(resp.body.data);
-                    console.log('loadData================')
-                    console.log(data);
-                    data.epShortname = data.enterpriseName
-                    console.log(data)
-                    that.$set(that.$data, "user", data);
-                    that.$set(that.$data, 'loading', false);
-                    that.$set(that.$data, 'disable', true)
+                    that.$set(that.$data, "goods", data)
+                    const coverD = [{'url':data.cover,'uid':new Date().getTime(), 'name':'封面'}];
+                    const pictureD = JSON.parse(data.pictures);
+                    that.$set(that.$data, "coverImages", coverD)
+                    that.$set(that.$data.goods,"coverImages", coverD);
+                    that.$set(that.$data, "picturesImages", pictureD)
+                    that.$set(that.$data.goods,"picturesImages", pictureD);
+                    that.$set(that.$data.goods,"saleStatusShow", that.$data.goods.saleStatus === 0)
+                    that.$set(that.$data.goods,"statusShow", that.$data.goods.status === 0)
+                    that.$set(that.$data.goods,"updateUser", that.$store.getters.user.uid)
+                    console.log(that);
+
+
+
                 })
             },
             successMsg(value) {

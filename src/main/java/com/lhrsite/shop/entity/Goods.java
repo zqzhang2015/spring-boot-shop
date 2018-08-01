@@ -37,4 +37,6 @@ public class Goods implements Serializable {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    private Integer clId;
+
 }

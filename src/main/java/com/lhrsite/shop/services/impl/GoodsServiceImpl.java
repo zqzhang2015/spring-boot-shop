@@ -2,9 +2,7 @@ package com.lhrsite.shop.services.impl;
 
 import com.lhrsite.shop.VO.GoodsListVO;
 import com.lhrsite.shop.VO.PageVO;
-import com.lhrsite.shop.entity.Goods;
-import com.lhrsite.shop.entity.QGoods;
-import com.lhrsite.shop.entity.QUser;
+import com.lhrsite.shop.entity.*;
 import com.lhrsite.shop.repository.GoodsRepository;
 import com.lhrsite.shop.services.GoodsService;
 import com.lhrsite.shop.util.EncryptUtil;
@@ -14,7 +12,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.security.provider.MD5;
 
 import javax.persistence.EntityManager;
 import java.util.UUID;
@@ -38,6 +35,7 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
 
         QGoods qGoods = QGoods.goods;
         QUser quser = QUser.user;
+        QClassify qClassify = QClassify.classify;
         BooleanBuilder builder = new BooleanBuilder();
         if (title != null && !title.equals("")){
             builder.and(qGoods.title.like("%" + title + "%"));
@@ -61,15 +59,18 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
                             qGoods.updateUser,
                             qGoods.createTime,
                             qGoods.updateTime,
-                            quser.username
+                            quser.username,
+                            qClassify.clName
                     )
                 )
                 .from(qGoods)
                 .innerJoin(quser).on(qGoods.updateUser.eq(quser.uid))
+                .innerJoin(qClassify).on(qClassify.clId.eq(qGoods.clId))
                 .offset((page - 1) * pageSize)
                 .limit(pageSize)
                 .where(builder)
                 .orderBy(qGoods.updateTime.desc());
+
 
         PageVO<GoodsListVO> pageVO = new PageVO<>();
 

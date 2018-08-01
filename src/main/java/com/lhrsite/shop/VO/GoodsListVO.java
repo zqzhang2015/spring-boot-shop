@@ -28,6 +28,7 @@ public class GoodsListVO {
 
     private String deliveryPlace;
 
+
 //    /* 发货地 */
 //    private BigDecimal despatchMoney;
     private Integer updateUser;
@@ -40,6 +41,8 @@ public class GoodsListVO {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    private Integer clId;
 
+    private String clName;
 
 }

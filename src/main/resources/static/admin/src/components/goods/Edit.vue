@@ -30,6 +30,9 @@
                     <!--<el-option label="禁用" :value="1"></el-option>-->
                 <!--</el-select>-->
             <!--</el-form-item>-->
+            <el-form-item label="分类" >
+                <el-input size="mini" v-model="goods.stock" placeholder="库存"></el-input>
+            </el-form-item>
             <el-form-item label="库存" >
                 <el-input size="mini" v-model="goods.stock" placeholder="库存"></el-input>
             </el-form-item>

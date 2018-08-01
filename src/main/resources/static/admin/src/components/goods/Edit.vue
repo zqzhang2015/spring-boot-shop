@@ -5,45 +5,53 @@
             <!--<el-button style="float: right; padding: 3px 0" type="text">编辑</el-button>-->
         </div>
 
-        <el-form ref="goods" :model="goods" label-width="80px" >
-            <el-form-item label="商品标题" >
+        <el-form ref="goods" :model="goods" label-width="80px">
+            <el-form-item label="商品标题">
                 <el-input size="mini" v-model="goods.title" placeholder="请输入商品标题"></el-input>
             </el-form-item>
-            <el-form-item label="商品描述" >
-                <el-input size="mini" v-model="goods.describe" style="width: 200px" type="textarea" placeholder="请输入商品描述"></el-input>
+            <el-form-item label="商品描述">
+                <el-input size="mini" v-model="goods.describe" style="width: 200px" type="textarea"
+                          placeholder="请输入商品描述"></el-input>
             </el-form-item>
-            <el-form-item label="原价" >
+            <el-form-item label="原价">
                 <el-input size="mini" v-model="goods.originalPrice" type="text" placeholder="请输入原价"></el-input>
             </el-form-item>
-            <el-form-item label="活动价" >
+            <el-form-item label="活动价">
                 <el-input size="mini" v-model="goods.salePrice" placeholder="请输入活动价"></el-input>
             </el-form-item>
-            <el-form-item label="开启活动" >
+            <el-form-item label="开启活动">
                 <el-switch size="mini" v-model="goods.saleStatusShow"></el-switch>
             </el-form-item>
-            <el-form-item label="上架" >
+            <el-form-item label="上架">
                 <el-switch size="mini" v-model="goods.statusShow"></el-switch>
             </el-form-item>
             <!--<el-form-item label="启用状态" >-->
-                <!--<el-select size="mini" v-model="user.status" placeholder="请选择状态">-->
-                    <!--<el-option label="启用" :value="0"></el-option>-->
-                    <!--<el-option label="禁用" :value="1"></el-option>-->
-                <!--</el-select>-->
+            <!--<el-select size="mini" v-model="user.status" placeholder="请选择状态">-->
+            <!--<el-option label="启用" :value="0"></el-option>-->
+            <!--<el-option label="禁用" :value="1"></el-option>-->
+            <!--</el-select>-->
             <!--</el-form-item>-->
-            <el-form-item label="分类" >
+            <el-form-item label="分类">
+                <el-cascader
+                        placeholder="请选择分类"
+                        :options="options"
+                        size="mini"
+                        :value="goods.clId"
+                        @change="classifyChange"
+                ></el-cascader>
+                <el-button @click="addClassifyShow = true" size="mini">添加分类</el-button>
+            </el-form-item>
+            <el-form-item label="库存">
                 <el-input size="mini" v-model="goods.stock" placeholder="库存"></el-input>
             </el-form-item>
-            <el-form-item label="库存" >
-                <el-input size="mini" v-model="goods.stock" placeholder="库存"></el-input>
-            </el-form-item>
-            <el-form-item label="发货地" >
+            <el-form-item label="发货地">
                 <el-input size="mini" v-model="goods.deliveryPlace" placeholder="发货地"></el-input>
             </el-form-item>
-            <el-form-item label="快递费" >
+            <el-form-item label="快递费">
                 <el-input size="mini" type="number" v-model="goods.despatchMoney" placeholder="快递费"></el-input>
             </el-form-item>
 
-            <el-form-item label="商品封面" >
+            <el-form-item label="商品封面">
                 <el-upload
                         class="upload-demo"
                         :action="coverUploadUrl"
@@ -60,7 +68,7 @@
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
             </el-form-item>
-            <el-form-item label="轮播图" >
+            <el-form-item label="轮播图">
                 <el-upload
                         class="upload-demo"
                         :action="picturesUploadUrl"
@@ -76,7 +84,7 @@
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
             </el-form-item>
-            <el-form-item label="商品详情" >
+            <el-form-item label="商品详情">
                 <div class="edit_container">
                     <quill-editor
                             v-model="goods.content"
@@ -91,17 +99,44 @@
                 <el-button type="primary" size="mini" @click="onSubmit(goods)">提交</el-button>
             </el-form-item>
         </el-form>
-
+        <el-dialog
+                title="添加分类"
+                :visible.sync="addClassifyShow"
+                width="30%">
+            <div>
+                <el-form ref="addClassify" :model="addClassify" label-width="80px">
+                    <el-form-item size="mini" label="分类名称">
+                        <el-input v-model="addClassify.clName"></el-input>
+                    </el-form-item>
+                    <el-form-item size="mini" label="分类等级">
+                        <el-radio-group v-model="addClassify.clGrade">
+                            <el-radio  label="0">一级</el-radio>
+                            <el-radio  label="1">二级</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="父级分类" v-show="addClassify.clGrade === '1'">
+                        <el-select v-model="addClassify.clFid" placeholder="请选择父级分类" value="请选择父级分类">
+                            <el-option :label="classify.clName" :value="classify.clId" :key="classify.clId" v-for="classify in fClassifys"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="addClassifyShow = false">取 消</el-button>
+                <el-button type="primary" @click="addClassifyForm()">添加</el-button>
+            </span>
+        </el-dialog>
     </el-card>
 </template>
 
 <script>
     import httpUtil from "../../util/HttpUtil.js";
-    import { quillEditor } from 'vue-quill-editor'
+    import {quillEditor} from 'vue-quill-editor'
+
     export default {
         name: "GoodsEdit",
 
-        data(){
+        data() {
 
             /* 验证密码 */
             const validatePass2 = (rule, value, callback) => {
@@ -129,62 +164,76 @@
                 }
             };
 
-            return{
-                content:null,
-                editorOption:{},
+            return {
+                addClassifyShow: false,
+                fClassifys:[],
+                options: [],
+                content: null,
+                addClassify: {
+                    clId: null,
+                    clName: '',
+                    clGrade: '0',
+                    clFid:0,
+                    clDel:0,
+                },
+                editorOption: {},
                 infoForm: {
                     a_title: '',
                     a_source: '',
-                    a_content:'',
+                    a_content: '',
                     editorOption: {}
                 },
                 imageUrl: '',
                 disable: false,
-                coverUploadUrl: httpUtil.baseurl()+'goods/coverUpload',
-                picturesUploadUrl: httpUtil.baseurl()+'goods/picturesUpload',
-                coverUrl: httpUtil.baseurl()+'goods/cover/',
-                picturesUrl: httpUtil.baseurl()+'goods/pictures/',
-                loading:true,
+                coverUploadUrl: httpUtil.baseurl() + 'goods/coverUpload',
+                picturesUploadUrl: httpUtil.baseurl() + 'goods/picturesUpload',
+                coverUrl: httpUtil.baseurl() + 'goods/cover/',
+                picturesUrl: httpUtil.baseurl() + 'goods/pictures/',
+                loading: true,
                 title: '',
                 message: '',
                 eqData: [],
-                param:{},
-                coverImages:[],
+                param: {},
+                coverImages: [],
                 picturesImages: [],
-                userStatusSelect:{lable: '启用', value: 0},
+                userStatusSelect: {lable: '启用', value: 0},
                 isShow: true,
-                currPhone:'',  // 点击编辑后对应用户的手机号
+                currPhone: '',  // 点击编辑后对应用户的手机号
                 // enterpriseList:[],
-                goods:{
-                    title:"",
-                    describe:"",
+                goods: {
+                    title: "",
+                    describe: "",
                     originalPrice: 0.00,
                     salePrice: 0.00,
                     saleStatus: 1,
-                    saleStatusShow:false,
+                    saleStatusShow: false,
                     status: 0,
                     statusShow: true,
                     stock: 0,
                     deliveryPlace: "本地",
-                    despatchMoney:0.00,
-                    coverImages:"",
+                    despatchMoney: 0.00,
+                    coverImages: "",
                     cover: '',
-                    pictures:'',
-                    picturesImages:[],
-                    content:'',
+                    pictures: '',
+                    picturesImages: [],
+                    content: '',
+                    clId: 0,
+                    clFid: 0,
                 }
             }
         },
-        mounted(){
+        mounted() {
             // this.titleSelect();
             this.titleSelect()
-            const  cacheGoods = sessionStorage.getItem("cacheGoods");
-            console.log("cacheGoods:"+cacheGoods)
-            if(cacheGoods !== null && cacheGoods !== ""){
+            const cacheGoods = sessionStorage.getItem("cacheGoods");
+            console.log("cacheGoods:" + cacheGoods)
+            if (cacheGoods !== null && cacheGoods !== "") {
                 this.$set(this.$data, "goods", JSON.parse(cacheGoods))
                 this.$set(this.$data, "picturesImages", this.$data.goods.picturesImages)
                 this.$set(this.$data, "coverImages", this.$data.goods.coverImages)
             }
+            this.fClassLoad()
+            this.loadClassifyTree()
         },
         computed: {
             editor() {
@@ -192,20 +241,47 @@
             }
         },
 
-        methods:{
+        methods: {
+            loadClassifyTree(){
+                const that = this;
+                httpUtil.get(this, 'goods', 'classifyTree', function (resp) {
+                    console.log(resp);
+                    const data = JSON.parse(resp.body.data)
+                    that.$set(that.$data,"options", data)
+                })
+            },
+            fClassLoad(){
+                const that = this;
+                httpUtil.get(this, 'goods', 'fClassify', function (resp) {
+                    console.log(resp);
+                    const data = JSON.parse(resp.body.data)
+                    that.$set(that.$data,"fClassifys", data)
+                })
+            },
+            addClassifyForm(){
+                const that = this;
+                httpUtil.post(this, 'goods', 'addClassify', this.addClassify, function (resp) {
+                    that.successMsg("添加分类成功！")
+                })
+            },
+            classifyChange(e) {
+                console.log(e)
+                this.$set(this.$data.goods, "clFid", e[0])
+                this.$set(this.$data.goods, "clId", e[1])
+            },
             beforePicturesUpload(file) {
                 return this.imgUploadRule(file)
             },
             beforeCoverUpload(file) {
                 //当封面有一张上传的图片时禁止上传
-                if (this.coverImages.length >= 1){
+                if (this.coverImages.length >= 1) {
                     this.$message.error('封面只能上传一张！');
                     return false;
                 }
                 return this.imgUploadRule(file)
             },
 
-            imgUploadRule(file){
+            imgUploadRule(file) {
                 const isImage = file.type === 'image/png' || file.type === 'image/jpeg';
                 const isLt10M = file.size / 1024 / 1024 < 10;
 
@@ -219,36 +295,36 @@
             },
 
 
-            handlePreview(){
+            handlePreview() {
 
             },
-            handleCoverImagesRemove(file, fileList){
+            handleCoverImagesRemove(file, fileList) {
                 const list = []
-                for (var i = 0; i < fileList.length; i++){
-                    if(fileList[i].uid !== file.uid){
+                for (var i = 0; i < fileList.length; i++) {
+                    if (fileList[i].uid !== file.uid) {
                         list.push(fileList[i])
                     }
                 }
                 this.$set(this.$data, "coverImages", list);
                 this.$set(this.$data.goods, "coverImages", list);
             },
-            handlePicturesImagesRemove(file, fileList){
+            handlePicturesImagesRemove(file, fileList) {
                 const list = []
-                for (var i = 0; i < fileList.length; i++){
-                    if(fileList[i].uid !== file.uid){
+                for (var i = 0; i < fileList.length; i++) {
+                    if (fileList[i].uid !== file.uid) {
                         list.push(fileList[i])
                     }
                 }
                 this.$set(this.$data, "picturesImages", list);
                 this.$set(this.$data.goods, "picturesImages", list);
             },
-            onEditorBlur(){//失去焦点事件
+            onEditorBlur() {//失去焦点事件
             },
-            onEditorFocus(){//获得焦点事件
+            onEditorFocus() {//获得焦点事件
             },
-            onEditorChange(){//内容改变事件
+            onEditorChange() {//内容改变事件
             },
-            coverSuccess(response, file, fileList){
+            coverSuccess(response, file, fileList) {
                 console.log("=====================")
                 console.log(response)
                 console.log(file)
@@ -256,38 +332,38 @@
                 console.log("=====================")
                 const data = JSON.parse(response.data);
                 this.coverImages.push({
-                    name:data.file,
-                    url:this.coverUrl + data.file,
+                    name: data.file,
+                    url: this.coverUrl + data.file,
                 });
 
             },
-            picturesSuccess(response, file, fileList){
+            picturesSuccess(response, file, fileList) {
                 const data = JSON.parse(response.data);
 
                 this.picturesImages.push({
-                    name:data.file,
-                    url:this.picturesUrl + data.file,
+                    name: data.file,
+                    url: this.picturesUrl + data.file,
                 });
 
 
             },
-            editorOption(){
+            editorOption() {
 
             },
             // 根据点击添加用户或者编辑用户，标题的替换。
             titleSelect() {
                 const goodsId = sessionStorage.getItem("goodsIdEdit");
-                console.log("goodsId:"+goodsId)
+                console.log("goodsId:" + goodsId)
 
-                this.$set(this.$data.goods, 'goodsId', goodsId==='undefined'? null : goodsId);
+                this.$set(this.$data.goods, 'goodsId', goodsId === 'undefined' ? null : goodsId);
 
                 if (goodsId !== 'undefined' && goodsId !== '' && goodsId !== undefined) {
                     //this.$set(this.$data.user, 'uid', uid);
-                    this.$set(this.$data,'title','编辑商品')
+                    this.$set(this.$data, 'title', '编辑商品')
                     this.loadData();
-                }else{
-                    this.$set(this.$data,'title','添加商品')
-                    this.$set(this.$data.goods,'goodsId',null)
+                } else {
+                    this.$set(this.$data, 'title', '添加商品')
+                    this.$set(this.$data.goods, 'goodsId', null)
                 }
 
                 // clear goodsIdEdit
@@ -299,9 +375,9 @@
                 //console.log('loadAll');
                 const that = this;
                 //console.log(this.$data.user.epShortname);
-                if(this.$data.user.epShortname !== undefined && this.$data.user.epShortname.length > 0){
-                    httpUtil.post(this, 'goods', "info", this.$data.goods.goodsId, function(resp) {
-                        let epArr= JSON.parse(resp.body.data);
+                if (this.$data.user.epShortname !== undefined && this.$data.user.epShortname.length > 0) {
+                    httpUtil.post(this, 'goods', "info", this.$data.goods.goodsId, function (resp) {
+                        let epArr = JSON.parse(resp.body.data);
                         that.$set(that.$data, 'eqData', epArr);
                         console.log(that.eqData)
                         console.log(epArr)
@@ -316,18 +392,18 @@
                 console.log(this.eqData)
                 this.eqData = [];
             },
+
             // 提交按钮，针对添加用户和编辑用户的判断。
             onSubmit(goods) {
                 // 缓存表单，如果出现提交失败还原表单
                 console.log(this.picturesImages)
-                this.$set(this.$data.goods,"coverImages", this.coverImages);
-                this.$set(this.$data.goods,"picturesImages", this.picturesImages);
-                this.$set(this.$data.goods,"saleStatus", this.$data.goods.saleStatusShow?0:1)
-                this.$set(this.$data.goods,"status", this.$data.goods.statusShow?0:1)
-                this.$set(this.$data.goods,"cover", this.$data.goods.coverImages[0].url);
-                this.$set(this.$data.goods,"pictures", JSON.stringify(this.$data.goods.picturesImages))
-                this.$set(this.$data.goods,"updateUser", this.$store.getters.user.uid)
-
+                this.$set(this.$data.goods, "coverImages", this.coverImages);
+                this.$set(this.$data.goods, "picturesImages", this.picturesImages);
+                this.$set(this.$data.goods, "saleStatus", this.$data.goods.saleStatusShow ? 0 : 1)
+                this.$set(this.$data.goods, "status", this.$data.goods.statusShow ? 0 : 1)
+                this.$set(this.$data.goods, "cover", this.$data.goods.coverImages[0].url);
+                this.$set(this.$data.goods, "pictures", JSON.stringify(this.$data.goods.picturesImages))
+                this.$set(this.$data.goods, "updateUser", this.$store.getters.user.uid)
 
                 // this.$set(this.$data.goods,"content", this.$refs.qe.editor.getContents())
 
@@ -342,27 +418,26 @@
                     console.log(resp);
                     that.successMsg("添加成功！")
                     // 添加成功清楚缓存
-                    sessionStorage.setItem("cacheGoods","");
+                    sessionStorage.setItem("cacheGoods", "");
                 })
             },
-            loadData(){
+            loadData() {
                 const that = this;
                 this.$set(this.$data, 'loading', true);
                 const goodsIdEdit = sessionStorage.getItem("goodsIdEdit");
-                httpUtil.post(this, 'goods', "info", {goodsId:goodsIdEdit}, function (resp) {
+                httpUtil.post(this, 'goods', "info", {goodsId: goodsIdEdit}, function (resp) {
                     const data = JSON.parse(resp.body.data);
                     that.$set(that.$data, "goods", data)
-                    const coverD = [{'url':data.cover,'uid':new Date().getTime(), 'name':'封面'}];
+                    const coverD = [{'url': data.cover, 'uid': new Date().getTime(), 'name': '封面'}];
                     const pictureD = JSON.parse(data.pictures);
                     that.$set(that.$data, "coverImages", coverD)
-                    that.$set(that.$data.goods,"coverImages", coverD);
+                    that.$set(that.$data.goods, "coverImages", coverD);
                     that.$set(that.$data, "picturesImages", pictureD)
-                    that.$set(that.$data.goods,"picturesImages", pictureD);
-                    that.$set(that.$data.goods,"saleStatusShow", that.$data.goods.saleStatus === 0)
-                    that.$set(that.$data.goods,"statusShow", that.$data.goods.status === 0)
-                    that.$set(that.$data.goods,"updateUser", that.$store.getters.user.uid)
+                    that.$set(that.$data.goods, "picturesImages", pictureD);
+                    that.$set(that.$data.goods, "saleStatusShow", that.$data.goods.saleStatus === 0)
+                    that.$set(that.$data.goods, "statusShow", that.$data.goods.status === 0)
+                    that.$set(that.$data.goods, "updateUser", that.$store.getters.user.uid)
                     console.log(that);
-
 
 
                 })
@@ -378,18 +453,21 @@
 </script>
 
 <style scoped>
-    .spterp_info_item{
+    .spterp_info_item {
         margin: 20px;
     }
-    .el-input{
+
+    .el-input {
         width: 200px;
     }
+
     #ul_eqShortname {
         display: block;
         list-style: none;
         padding: 0;
         margin-top: 0;
     }
+
     .li_eqShortname {
         font-size: 16px;
         cursor: pointer;

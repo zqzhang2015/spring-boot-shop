@@ -67,7 +67,11 @@ public class GoodsController {
         resultVO.setData(JSON.toJSONString(classifyService.getClassifyTree()));
         return JSON.toJSONString(resultVO);
     }
-
+    @GetMapping("/fClassify")
+    public String fClassify(){
+        resultVO.setData(JSON.toJSONString(classifyService.getFClassify()));
+        return JSON.toJSONString(resultVO);
+    }
     @PostMapping("/addClassify")
     public String add(Classify classify){
         resultVO.setData(JSON.toJSONString(classifyService.add(classify)));

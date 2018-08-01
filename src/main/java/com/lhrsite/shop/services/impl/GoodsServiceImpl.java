@@ -60,7 +60,9 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
                             qGoods.createTime,
                             qGoods.updateTime,
                             quser.username,
-                            qClassify.clName
+                            qClassify.clId,
+                            qClassify.clName,
+                            qClassify.clFid
                     )
                 )
                 .from(qGoods)

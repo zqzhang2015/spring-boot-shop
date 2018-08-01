@@ -25,6 +25,9 @@ public class ClassifyVO {
         BeanUtils.copyProperties(classify, classifyVO);
         classifyVO.setValue(classify.getClId());
         classifyVO.setLabel(classify.getClName());
+        if (classifyVO.getClGrade().equals(1)){
+            classifyVO.setChildren(null);
+        }
         return classifyVO;
     }
 

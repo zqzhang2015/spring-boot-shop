@@ -42,7 +42,10 @@ public class GoodsListVO {
     private Date updateTime;
 
     private Integer clId;
-
     private String clName;
+
+    private Integer clFid;
+    private String clFName;
+
 
 }

@@ -43,6 +43,28 @@ public class ClassifyServiceImpl extends BaseServiceImpl implements ClassifyServ
 
         List<ClassifyVO> resultVO = new ArrayList<>();
 
+        classifyToVO(classifyVOS, resultVO);
+
+        return resultVO;
+    }
+
+    @Override
+    public List<ClassifyVO> getFClassify() {
+        QClassify qClassify = QClassify.classify;
+        List<Classify> classifies = queryFactory.selectFrom(qClassify)
+                .orderBy(qClassify.clGrade.desc())
+                .where(qClassify.clDel.eq(0))
+                .where(qClassify.clFid.eq(0))
+                .fetch();
+        List<ClassifyVO> classifyVOS = ClassifyVO.init(classifies);
+
+        List<ClassifyVO> resultVO = new ArrayList<>();
+
+        classifyToVO(classifyVOS, resultVO);
+        return resultVO;
+    }
+
+    private void classifyToVO(List<ClassifyVO> classifyVOS, List<ClassifyVO> resultVO) {
         classifyVOS.forEach(classifyVO -> {
             if (classifyVO.getClGrade() == 0){
                 resultVO.add(classifyVO);
@@ -55,8 +77,6 @@ public class ClassifyServiceImpl extends BaseServiceImpl implements ClassifyServ
             }
 
         });
-
-        return resultVO;
     }
 
     @Override

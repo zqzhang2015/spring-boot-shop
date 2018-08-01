@@ -38,5 +38,7 @@ public class Goods implements Serializable {
     private Date updateTime;
 
     private Integer clId;
+    private Integer clFid;
+
 
 }

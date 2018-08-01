@@ -9,6 +9,7 @@ import java.util.List;
 public interface ClassifyService {
 
     List<ClassifyVO> getClassifyTree();
+    List<ClassifyVO> getFClassify();
 
     Classify add(Classify classify);
 

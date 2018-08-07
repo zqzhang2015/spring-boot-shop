@@ -44,6 +44,9 @@ public enum ErrEumn {
 
     CLASSIFY_IS_NOTEXIT(-100024, "分类不存在！"),
 
+    BUY_CAR_IS_NULL(-100025, "购物车空空如也！");
+
+
     ;
 
 

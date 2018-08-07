@@ -14,7 +14,6 @@ public class OrderDetails {
   @Id
   private String odId;
   private String goodsId;
-  private BigDecimal despatchMoney;
   private Integer number;
 
 

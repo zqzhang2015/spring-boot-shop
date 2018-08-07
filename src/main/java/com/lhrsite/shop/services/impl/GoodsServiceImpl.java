@@ -48,6 +48,8 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
                             GoodsListVO.class,
                             qGoods.goodsId,
                             qGoods.title,
+                            qGoods.content,
+                            qGoods.describe,
                             qGoods.originalPrice,
                             qGoods.salePrice,
                             qGoods.saleStatus,

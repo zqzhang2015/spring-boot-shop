@@ -11,6 +11,10 @@ public class GoodsListVO {
 
     private String goodsId;
     private String title;
+    private String describe;
+    private String content;
+
+
     private BigDecimal originalPrice;
 
     private BigDecimal salePrice;

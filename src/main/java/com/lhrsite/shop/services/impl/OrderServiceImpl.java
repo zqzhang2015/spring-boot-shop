@@ -5,12 +5,14 @@ import com.lhrsite.shop.VO.BuyCarVO;
 import com.lhrsite.shop.VO.OrderVO;
 import com.lhrsite.shop.entity.Order;
 import com.lhrsite.shop.entity.OrderDetails;
+import com.lhrsite.shop.entity.User;
 import com.lhrsite.shop.enums.ErrEumn;
 import com.lhrsite.shop.exception.ErpException;
 import com.lhrsite.shop.repository.OrderDetailsRepository;
 import com.lhrsite.shop.repository.OrderRepository;
 import com.lhrsite.shop.services.BuyCarService;
 import com.lhrsite.shop.services.OrderService;
+import com.lhrsite.shop.services.UserService;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;
@@ -22,13 +24,15 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     private JPAQueryFactory queryFactory;
 
     private final OrderRepository orderRepository;
+    private final UserService userService;
 
     private final OrderDetailsRepository orderDetailsRepository;
     private final BuyCarService buyCarService;
 
-    public OrderServiceImpl(EntityManager entityManager, OrderRepository orderRepository, OrderDetailsRepository orderDetailsRepository, BuyCarService buyCarService) {
+    public OrderServiceImpl(EntityManager entityManager, OrderRepository orderRepository, UserService userService, OrderDetailsRepository orderDetailsRepository, BuyCarService buyCarService) {
         super(entityManager);
         this.orderRepository = orderRepository;
+        this.userService = userService;
         this.orderDetailsRepository = orderDetailsRepository;
         this.buyCarService = buyCarService;
         this.queryFactory = getQueryFactory();
@@ -36,11 +40,11 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderVO createOrder(Integer userId) throws ErpException {
+    public OrderVO createOrder(String token) throws ErpException {
 
 
         // 获取用户购物车
-        List<BuyCarVO> buyCarVOS = buyCarService.getBuyCar(userId);
+        List<BuyCarVO> buyCarVOS = buyCarService.getBuyCar(token);
         if (buyCarVOS.size() == 0){
             // 购物车为空
             throw new ErpException(ErrEumn.BUY_CAR_IS_NULL);
@@ -78,8 +82,9 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
             }
 
         }
+        User user = userService.tokenGetUser(token);
         order.setDespatchMoney(despatchMoney);
-        order.setUserId(userId);
+        order.setUserId(user.getUid());
         order.setOrderAmount(orderAmount);
         order.setOffer(offer);
         order.setStatus(0);
@@ -90,9 +95,9 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         return orderVO;
     }
 
-    public Map<String, BigDecimal> settleAccounts(Integer userId) throws ErpException {
+    public Map<String, BigDecimal> settleAccounts(String token) throws ErpException {
         // 获取用户购物车
-        List<BuyCarVO> buyCarVOS = buyCarService.getBuyCar(userId);
+        List<BuyCarVO> buyCarVOS = buyCarService.getBuyCar(token);
         if (buyCarVOS.size() == 0){
             // 购物车为空
             throw new ErpException(ErrEumn.BUY_CAR_IS_NULL);

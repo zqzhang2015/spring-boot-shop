@@ -3,6 +3,7 @@ package com.lhrsite.shop.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -15,6 +16,7 @@ public class BuyCar {
   private Integer userId;
   private String goodsId;
   private Integer number;
+  @Column(updatable = false, insertable = false)
   private java.sql.Timestamp createTime;
 
 

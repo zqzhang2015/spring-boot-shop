@@ -9,9 +9,10 @@ import java.util.Map;
 
 public interface OrderService {
 
-    OrderVO createOrder(Integer userId) throws ErpException;
 
-    Map<String, BigDecimal> settleAccounts(Integer userId) throws ErpException;
+    OrderVO createOrder(String token) throws ErpException;
+
+    Map<String, BigDecimal> settleAccounts(String token) throws ErpException;
 
     Order updateOrder(Order order);
 

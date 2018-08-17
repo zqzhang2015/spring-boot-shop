@@ -57,7 +57,7 @@ public class AuthGroupServiceImpl extends BaseServiceImpl implements AuthGroupSe
         List<AuthGroupDropDownVO> authGroupDropDownVOS = new ArrayList<>();
 
         List<AuthGroup> authGroups = authGroupRepository
-                .findAllByEnterpriseAndAndAgStatus(enterprise, 0);
+                .findAllByEnterpriseAndAgStatus(enterprise, 0);
 
 
         authGroups.forEach(authGroup ->
@@ -163,7 +163,7 @@ public class AuthGroupServiceImpl extends BaseServiceImpl implements AuthGroupSe
     public List<AuthGroup> getAuthGroup(Integer enterpriseId) {
 
         return authGroupRepository
-                .findAllByEnterpriseAndAndAgStatus(enterpriseId,
+                .findAllByEnterpriseAndAgStatus(enterpriseId,
                 AuthGroupEnums.USE.getCode());
     }
 

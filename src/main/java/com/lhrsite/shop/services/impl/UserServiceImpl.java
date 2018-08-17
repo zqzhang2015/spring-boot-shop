@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -92,9 +89,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService  {
     @Override
     public UserVO tokenCanUse(String token) throws ErpException {
         UserLogin userLogin = userLoginRepository.findByUserToken(token);
+        Optional<User> oul;
         if (userLogin != null
-                && userLogin.getExpireTime().getTime() > System.currentTimeMillis()){
-            User user = userRepository.findById(userLogin.getUserId()).get();
+                && userLogin.getExpireTime().getTime() > new Date().getTime()
+                && (oul = userRepository.findById(userLogin.getUserId())).isPresent()){
+            User user = oul.get();
             UserVO userVO = userToUserVO(user, true);
             userVO.setToken(userLogin.getUserToken());
             return userVO;

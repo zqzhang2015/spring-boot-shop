@@ -3,6 +3,7 @@ package com.lhrsite.shop.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class Order {
   // 优惠
   private BigDecimal offer;
   private Integer status;
+  @Column(insertable = false, updatable = false)
   private java.sql.Timestamp createTime;
 
 

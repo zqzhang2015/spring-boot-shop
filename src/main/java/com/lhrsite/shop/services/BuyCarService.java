@@ -9,11 +9,12 @@ public interface BuyCarService {
 
     BuyCar addBuyCar(BuyCar buyCar);
 
-    BuyCar minusBuyCar(BuyCar buyCar, Integer number);
 
     void deleteBuyCar(String buyCarId);
 
     List<BuyCarVO> getBuyCar(String token);
 
     BuyCar addBuyCar(String token, String goodsId, Integer number);
+
+    BuyCar minusBuyCar(String token, String goodsId, Integer number);
 }

@@ -46,7 +46,6 @@ public class BuyCarServiceImpl extends BaseServiceImpl implements BuyCarService 
         return buyCarReository.save(buyCar1);
     }
 
-    @Override
     public BuyCar minusBuyCar(BuyCar buyCar, Integer number) {
         BuyCar buyCar1 = buyCarReository.findByUserIdAndGoodsId(buyCar.getUserId(), buyCar.getGoodsId());
         buyCar1.setNumber(buyCar1.getNumber() - number);
@@ -76,21 +75,6 @@ public class BuyCarServiceImpl extends BaseServiceImpl implements BuyCarService 
                         qBuyCar.userId,
                         qBuyCar.createTime,
                         QGoods.goods
-
-//                        qGoods.goodsId,
-//                        qGoods.title,
-//                        qGoods.content,
-//                        qGoods.describe,
-//                        qGoods.originalPrice,
-//                        qGoods.salePrice,
-//                        qGoods.saleStatus,
-//                        qGoods.cover,
-//                        qGoods.status,
-//                        qGoods.stock,
-//                        qGoods.salesVolume,
-//                        qGoods.deliveryPlace,
-//                        qGoods.updateUser,
-//                        qGoods.updateTime
                 )
         ).from(qBuyCar)
         .innerJoin(qGoods).on(qGoods.goodsId.eq(qBuyCar.goodsId))
@@ -109,6 +93,23 @@ public class BuyCarServiceImpl extends BaseServiceImpl implements BuyCarService 
         buyCar.setNumber(number);
         buyCar.setId(createBuyCarId());
         return addBuyCar(buyCar);
+    }
+
+    @Override
+    public BuyCar minusBuyCar(String token, String goodsId, Integer number) {
+        User user = userService.tokenGetUser(token);
+
+        QBuyCar qBuyCar = QBuyCar.buyCar;
+        List<BuyCar> buyCars = queryFactory.selectFrom(qBuyCar)
+                .where(
+                        qBuyCar.userId.eq(user.getUid())
+                        .and(qBuyCar.goodsId.eq(goodsId))
+                ).fetch();
+        BuyCar buyCar = buyCars.get(0);
+
+        buyCar.setNumber(buyCar.getNumber() - number);
+
+        return buyCarReository.save(buyCar);
     }
 
     private synchronized String createBuyCarId(){

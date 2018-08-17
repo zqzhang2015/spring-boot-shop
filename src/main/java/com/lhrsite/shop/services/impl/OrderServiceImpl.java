@@ -14,11 +14,13 @@ import com.lhrsite.shop.services.BuyCarService;
 import com.lhrsite.shop.services.OrderService;
 import com.lhrsite.shop.services.UserService;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.*;
 
+@Service
 public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
 
     private JPAQueryFactory queryFactory;
@@ -88,9 +90,12 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         order.setOrderAmount(orderAmount);
         order.setOffer(offer);
         order.setStatus(0);
+        System.out.println(order);
 
         OrderVO orderVO = new OrderVO();
-        orderVO.setOrder(orderRepository.save(order));
+        Order order1 = orderRepository.save(order);
+        System.out.println(order1);
+        orderVO.setOrder(order1);
         orderVO.setOrderDetails(orderDetailsRepository.saveAll(orderDetails));
         return orderVO;
     }

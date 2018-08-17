@@ -12,7 +12,7 @@ public interface AuthGroupRepository
         extends BaseRepository<AuthGroup, Integer> {
 
 
-    List<AuthGroup> findAllByEnterpriseAndAndAgStatus(
+    List<AuthGroup> findAllByEnterpriseAndAgStatus(
             Integer enterprise, Integer status);
 
 

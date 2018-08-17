@@ -29,6 +29,7 @@ public class BuyCarController {
         resultVO.setData(JSON.toJSONString(buyCarService.addBuyCar(token, goodsId, number)));
         return JSON.toJSONString(resultVO);
     }
+
     @RequestMapping("/getBuyCar")
     public String add(String token){
         if (token == null || "".equals(token)|| "undefined".equals(token)){
@@ -41,8 +42,8 @@ public class BuyCarController {
     }
 
     @RequestMapping("/minusBuyCar")
-    public String minusBuyCar(BuyCar buyCar){
-        resultVO.setData(JSON.toJSONString(buyCarService.minusBuyCar(buyCar, 1)));
+    public String minusBuyCar(String token, String goodsId, Integer number){
+        resultVO.setData(JSON.toJSONString(buyCarService.minusBuyCar(token, goodsId,number)));
         return JSON.toJSONString(resultVO);
     }
 

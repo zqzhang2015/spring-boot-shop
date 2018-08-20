@@ -21,8 +21,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
-Vue.use(VueRouter);
-Vue.use(ElementUI);
+Vue.use(ElementUI)
 const VueCookie = require('vue-cookie');
 Vue.use(VueCookie);
 Vue.use(VueResource);

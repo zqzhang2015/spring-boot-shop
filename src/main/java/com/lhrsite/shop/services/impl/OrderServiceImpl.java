@@ -47,6 +47,8 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
 
         // 获取用户购物车
         List<BuyCarVO> buyCarVOS = buyCarService.getBuyCar(token);
+        List<String> buyCarIds = new ArrayList<>();
+
         if (buyCarVOS.size() == 0){
             // 购物车为空
             throw new ErpException(ErrEumn.BUY_CAR_IS_NULL);
@@ -60,43 +62,32 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         // 优惠
         BigDecimal offer = new BigDecimal(0);
         for (int i = 0; i < buyCarVOS.size(); i++){
+            buyCarIds.add(buyCarVOS.get(i).getId());
             orderDetails.add(buyCarVOSToOrderDetails(buyCarVOS.get(i), order.getOrderId(), i));
-            if (buyCarVOS.get(i).getGoods().getSaleStatus() == 1){
-                orderAmount.add(buyCarVOS.get(i).getGoods()
-                        .getSalePrice()
-                        .multiply(new BigDecimal(buyCarVOS.get(i).getNumber())));
-                offer.add(
-                        (
-                                buyCarVOS.get(i).getGoods().getOriginalPrice()
-                                .subtract(
-                                        buyCarVOS.get(i).getGoods().getSalePrice()
-                                )
-                        )
-                                .multiply(
-                                        new BigDecimal(buyCarVOS.get(i).getNumber())
-                                )
-                );
-                despatchMoney.add(
-                        buyCarVOS.get(i).getGoods().getDespatchMoney().multiply(
-                                new BigDecimal(buyCarVOS.get(i).getNumber())
-                        )
-                );
-            }
-
+            // 算单个商品价格（价格*数量）
+            Map<String, BigDecimal> result = settleAccountsOneGoods(buyCarVOS, orderAmount, offer, i, despatchMoney);
+            orderAmount = result.get("orderAmount");
+            despatchMoney = result.get("despatchMoney");
+            offer = result.get("offer");
         }
+
         User user = userService.tokenGetUser(token);
         order.setDespatchMoney(despatchMoney);
         order.setUserId(user.getUid());
         order.setOrderAmount(orderAmount);
         order.setOffer(offer);
         order.setStatus(0);
-        System.out.println(order);
 
         OrderVO orderVO = new OrderVO();
         Order order1 = orderRepository.save(order);
         System.out.println(order1);
         orderVO.setOrder(order1);
         orderVO.setOrderDetails(orderDetailsRepository.saveAll(orderDetails));
+        // 成功下单删除购物车商品
+        for (String buyCarId : buyCarIds){
+            buyCarService.deleteBuyCar(buyCarId);
+
+        }
         return orderVO;
     }
 
@@ -112,29 +103,11 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         BigDecimal despatchMoney = new BigDecimal(0);
         // 优惠
         BigDecimal offer = new BigDecimal(0);
-        for (BuyCarVO buyCarVO : buyCarVOS) {
-            if (buyCarVO.getGoods().getSaleStatus() == 1) {
-                orderAmount.add(buyCarVO.getGoods()
-                        .getSalePrice()
-                        .multiply(new BigDecimal(buyCarVO.getNumber())));
-                offer.add(
-                        (
-                                buyCarVO.getGoods().getOriginalPrice()
-                                        .subtract(
-                                                buyCarVO.getGoods().getSalePrice()
-                                        )
-                        )
-                                .multiply(
-                                        new BigDecimal(buyCarVO.getNumber())
-                                )
-                );
-                despatchMoney.add(
-                        buyCarVO.getGoods().getDespatchMoney().multiply(
-                                new BigDecimal(buyCarVO.getNumber())
-                        )
-                );
-            }
-
+        for (int i = 0; i < buyCarVOS.size(); i++){
+            Map<String, BigDecimal> result = settleAccountsOneGoods(buyCarVOS, orderAmount, offer, i, despatchMoney);
+            orderAmount = result.get("orderAmount");
+            despatchMoney = result.get("despatchMoney");
+            offer = result.get("offer");
         }
 
         Map<String, BigDecimal> zhang = new HashMap<>();
@@ -145,10 +118,53 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
 
     }
 
+    private Map<String, BigDecimal> settleAccountsOneGoods(List<BuyCarVO> buyCarVOS, BigDecimal orderAmount, BigDecimal offer, int i, BigDecimal despatchMoney) {
+        Map<String, BigDecimal> result = new HashMap<>();
+        result.put("orderAmount", new BigDecimal(0));
+        result.put("offer", new BigDecimal(0));
+        result.put("despatchMoney", new BigDecimal(0));
+
+        if (buyCarVOS.get(i).getGoods().getSaleStatus() == 1){
+            BigDecimal goodsSalePrice = buyCarVOS.get(i).getGoods()
+                    .getSalePrice();
+            BigDecimal number = new BigDecimal(buyCarVOS.get(i).getNumber());
+            BigDecimal addUp = goodsSalePrice.multiply(number);
+            orderAmount = orderAmount.add(addUp);
+            result.put("orderAmount", orderAmount);
+            offer = offer.add(
+                    (
+                            buyCarVOS.get(i).getGoods().getOriginalPrice()
+                                    .subtract(
+                                            buyCarVOS.get(i).getGoods().getSalePrice()
+                                    )
+                    ).multiply(number)
+            );
+            result.put("offer", offer);
+        }else{
+            BigDecimal goodsOriginalPrice = buyCarVOS.get(i).getGoods()
+                    .getOriginalPrice();
+            BigDecimal number = new BigDecimal(buyCarVOS.get(i).getNumber());
+            BigDecimal addUp = goodsOriginalPrice.multiply(number);
+            orderAmount = orderAmount.add(addUp);
+            result.put("orderAmount", orderAmount);
+
+
+        }
+        despatchMoney = despatchMoney.add(
+                buyCarVOS.get(i).getGoods().getDespatchMoney().multiply(
+                        new BigDecimal(buyCarVOS.get(i).getNumber())
+                )
+        );
+        result.put("despatchMoney", despatchMoney);
+        return result;
+
+
+    }
+
     private String randomOrderIdEnd(){
         String orderIdEnd = "";
         Random random = new Random();
-        int[] array = random.ints(6,0, 10).toArray();
+        int[] array = random.ints(3,0, 10).toArray();
         for (int i=0;i<array.length; i++){
             orderIdEnd += array[i];
         }
@@ -165,9 +181,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         orderDetails.setOdId(orderId + str.toString());
         orderDetails.setGoodsId(buyCarVO.getGoods().getGoodsId());
         orderDetails.setNumber(buyCarVO.getNumber());
-
         return orderDetails;
-
 
     }
     @Override

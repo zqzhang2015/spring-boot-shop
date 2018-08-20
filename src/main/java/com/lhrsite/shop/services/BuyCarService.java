@@ -12,6 +12,8 @@ public interface BuyCarService {
 
     void deleteBuyCar(String buyCarId);
 
+
+
     List<BuyCarVO> getBuyCar(String token);
 
     BuyCar addBuyCar(String token, String goodsId, Integer number);

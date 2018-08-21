@@ -114,8 +114,7 @@
     import GoodsList from './components/goods/List'
     import GoodsEdit from './components/goods/Edit'
     import GoodsAdd from './components/goods/Edit'
-    import GoodsClass from './components/goods/Class'
-
+    import OrderList from './components/order/list'
     export default {
         components: {
             Home,
@@ -131,7 +130,7 @@
             GoodsList,
             GoodsAdd,
             GoodsEdit,
-            GoodsClass,
+            OrderList
         },
         data() {
             return {
@@ -188,6 +187,16 @@
                             {
                                 itemIndex: '/goods/list',
                                 itemName: '商品列表'
+                            },
+                        ]
+                    },
+                    {
+                        menuIndex: 'order',
+                        menuName: '订单管理',
+                        menuItems: [
+                            {
+                                itemIndex: '/order/list',
+                                itemName: '订单列表'
                             },
                         ]
                     }
@@ -369,9 +378,9 @@
                     key.substring(0, '/goods/edit'.length) === '/goods/edit') {
                     this.addTab('编辑商品');
                 }
-                else if (key.length >= '/goods/class'.length &&
-                    key.substring(0, '/goods/class'.length) === '/goods/class') {
-                    this.addTab('分类管理');
+                else if (key.length >= '/order/list'.length &&
+                    key.substring(0, '/order/list'.length) === '/order/list') {
+                    this.addTab('订单列表');
                 }
                 console.log("路由跳转："+key)
 

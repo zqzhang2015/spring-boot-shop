@@ -1,4 +1,9 @@
 export default {
+    订单列表:{
+        name: '订单列表',
+        path: '/order/list',
+        componentName: 'OrderList'
+    },
     分类管理: {
         name: '分类管理',
         path: '/goods/class',

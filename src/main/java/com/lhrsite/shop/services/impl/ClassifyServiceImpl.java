@@ -80,7 +80,19 @@ public class ClassifyServiceImpl extends BaseServiceImpl implements ClassifyServ
     }
 
     @Override
-    public Classify add(Classify classify) {
+    public Classify add(Classify classify) throws ErpException {
+        // 判断是否存在
+        QClassify qClassify = QClassify.classify;
+
+        Classify existClassify = queryFactory.selectFrom(qClassify)
+                .where(
+                        qClassify.clDel.eq(0)
+                        .and(qClassify.clName.eq(classify.getClName()))
+                ).fetchOne();
+        if (existClassify != null){
+            throw new ErpException(ErrEumn.CLASSIFY_IS_EXIST);
+        }
+
         return classifyRepository.save(classify);
     }
 
@@ -93,7 +105,7 @@ public class ClassifyServiceImpl extends BaseServiceImpl implements ClassifyServ
     public Classify findById(Integer clId) throws ErpException {
         Optional<Classify> classifyOptional = classifyRepository.findById(clId);
         if (! classifyOptional.isPresent()){
-            throw new ErpException(ErrEumn.CLASSIFY_IS_NOTEXIT);
+            throw new ErpException(ErrEumn.CLASSIFY_IS_NOTEXIST);
         }
         return classifyOptional.get();
     }

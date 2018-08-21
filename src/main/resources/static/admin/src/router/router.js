@@ -13,6 +13,7 @@ import AuthGroup from '../components/auth/AuthGroup'
 import EditAuthValue from '../components/auth/EditAuthValue'
 import GoodsList from '../components/goods/List'
 import GoodsEdit from '../components/goods/Edit'
+import GoodsClass from '../components/goods/Class'
 
 const routes = [
     {
@@ -77,6 +78,10 @@ const routes = [
             {
                 path : 'edit',
                 component: GoodsEdit
+            },
+            {
+                path : 'class',
+                component: GoodsClass
             }
         ]
     }

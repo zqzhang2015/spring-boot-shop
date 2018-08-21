@@ -73,7 +73,7 @@ public class GoodsController {
         return JSON.toJSONString(resultVO);
     }
     @PostMapping("/addClassify")
-    public String add(Classify classify){
+    public String add(Classify classify) throws ErpException {
         resultVO.setData(JSON.toJSONString(classifyService.add(classify)));
         return JSON.toJSONString(resultVO);
     }

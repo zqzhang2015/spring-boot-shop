@@ -1,7 +1,7 @@
 package com.lhrsite.shop.enums;
 
 public enum ErrEumn {
-    USER_NO_EXIT(-10000, "用户不存在"),
+    USER_NO_EXIST(-10000, "用户不存在"),
     ADD_USER_ERR(-10001, "添加用户失败"),
     UPDATE_USER_PARAMS_ERR(-10002, "修改用户-非法参数"),
     UPDATE_USER_ERR(-10003, "修改用户-非法参数"),
@@ -42,9 +42,11 @@ public enum ErrEumn {
     UPLOAD_ERROR(-100023, "上传文件失败"),
 
 
-    CLASSIFY_IS_NOTEXIT(-100024, "分类不存在！"),
+    CLASSIFY_IS_NOTEXIST(-100024, "分类不存在！"),
 
-    BUY_CAR_IS_NULL(-100025, "购物车空空如也！");
+    BUY_CAR_IS_NULL(-100025, "购物车空空如也！"),
+
+    CLASSIFY_IS_EXIST(-100026, "分类已存在！"),
 
 
     ;

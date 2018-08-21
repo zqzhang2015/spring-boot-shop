@@ -1,4 +1,9 @@
 export default {
+    分类管理: {
+        name: '分类管理',
+        path: '/goods/class',
+        componentName: 'GoodsClass'
+    },
     编辑商品: {
         name: '编辑商品',
         path: '/goods/edit',

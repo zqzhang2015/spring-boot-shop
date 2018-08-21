@@ -34,9 +34,9 @@
             <el-form-item label="分类">
                 <el-cascader
                         placeholder="请选择分类"
-                        :options="options"
+                        :options="classifyOptions"
                         size="mini"
-                        :value="goods.clId"
+                        change-on-select
                         @change="classifyChange"
                 ></el-cascader>
                 <el-button @click="addClassifyShow = true" size="mini">添加分类</el-button>
@@ -131,11 +131,14 @@
 
 <script>
     import httpUtil from "../../util/HttpUtil.js";
-    import {quillEditor} from 'vue-quill-editor'
+    import {quillEditor, Quill} from 'vue-quill-editor'
+    import {container, ImageExtend, QuillWatch} from 'quill-image-extend-module'
+
+    Quill.register('modules/ImageExtend', ImageExtend)
 
     export default {
         name: "GoodsEdit",
-
+        components: {quillEditor},
         data() {
 
             /* 验证密码 */
@@ -167,7 +170,7 @@
             return {
                 addClassifyShow: false,
                 fClassifys:[],
-                options: [],
+                classifyOptions: [],
                 content: null,
                 addClassify: {
                     clId: null,
@@ -176,12 +179,31 @@
                     clFid:0,
                     clDel:0,
                 },
-                editorOption: {},
+                editorOption: {
+                    modules: {
+                        ImageExtend: {
+                            loading: true,
+                            name: 'file',
+                            action: httpUtil.baseurl("goods") + 'picturesUpload',
+                            response: (res) => {
+                                console.log(res)
+                                return httpUtil.baseurl("goods") + 'pictures/' + JSON.parse(res.data).file;
+                            }
+                        },
+                        toolbar: {
+                            container: container,
+                            handlers: {
+                                'image': function () {
+                                    QuillWatch.emit(this.quill.id)
+                                }
+                            }
+                        }
+                    }
+                },
                 infoForm: {
                     a_title: '',
                     a_source: '',
                     a_content: '',
-                    editorOption: {}
                 },
                 imageUrl: '',
                 disable: false,
@@ -224,30 +246,31 @@
         },
         mounted() {
             // this.titleSelect();
+
             this.titleSelect()
+            this.fClassLoad()
+            this.loadClassifyTree()
             const cacheGoods = sessionStorage.getItem("cacheGoods");
             console.log("cacheGoods:" + cacheGoods)
-            if (cacheGoods !== null && cacheGoods !== "") {
+            if (cacheGoods !== null && cacheGoods !== "" && cacheGoods !== undefined) {
                 this.$set(this.$data, "goods", JSON.parse(cacheGoods))
                 this.$set(this.$data, "picturesImages", this.$data.goods.picturesImages)
                 this.$set(this.$data, "coverImages", this.$data.goods.coverImages)
             }
-            this.fClassLoad()
-            this.loadClassifyTree()
+
         },
         computed: {
             editor() {
                 return this.$refs.myQuillEditor.quill
             }
         },
-
         methods: {
             loadClassifyTree(){
                 const that = this;
                 httpUtil.get(this, 'goods', 'classifyTree', function (resp) {
                     console.log(resp);
                     const data = JSON.parse(resp.body.data)
-                    that.$set(that.$data,"options", data)
+                    that.$set(that.$data,"classifyOptions", data)
                 })
             },
             fClassLoad(){
@@ -262,6 +285,8 @@
                 const that = this;
                 httpUtil.post(this, 'goods', 'addClassify', this.addClassify, function (resp) {
                     that.successMsg("添加分类成功！")
+                    that.fClassLoad()
+                    that.loadClassifyTree()
                 })
             },
             classifyChange(e) {
@@ -347,9 +372,6 @@
 
 
             },
-            editorOption() {
-
-            },
             // 根据点击添加用户或者编辑用户，标题的替换。
             titleSelect() {
                 const goodsId = sessionStorage.getItem("goodsIdEdit");
@@ -397,13 +419,19 @@
             onSubmit(goods) {
                 // 缓存表单，如果出现提交失败还原表单
                 console.log(this.picturesImages)
-                this.$set(this.$data.goods, "coverImages", this.coverImages);
-                this.$set(this.$data.goods, "picturesImages", this.picturesImages);
+                this.$set(this.$data.goods, "coverImages", this.coverImages === undefined ?
+                    '':this.coverImages);
+                this.$set(this.$data.goods, "picturesImages", this.picturesImages === undefined ?
+                    '':this.picturesImages);
                 this.$set(this.$data.goods, "saleStatus", this.$data.goods.saleStatusShow ? 0 : 1)
                 this.$set(this.$data.goods, "status", this.$data.goods.statusShow ? 0 : 1)
-                this.$set(this.$data.goods, "cover", this.$data.goods.coverImages[0].url);
-                this.$set(this.$data.goods, "pictures", JSON.stringify(this.$data.goods.picturesImages))
-                this.$set(this.$data.goods, "updateUser", this.$store.getters.user.uid)
+                this.$set(this.$data.goods, "cover",
+                    this.$data.goods.coverImages[0].url === undefined ?
+                        '':this.$data.goods.coverImages[0].url);
+                this.$set(this.$data.goods, "pictures", JSON.stringify(this.$data.goods.picturesImages === undefined ?
+                    {}: this.$data.goods.picturesImages))
+                this.$set(this.$data.goods, "updateUser", this.$store.getters.user.uid === undefined ?
+                    '':this.$store.getters.user.uid)
 
                 // this.$set(this.$data.goods,"content", this.$refs.qe.editor.getContents())
 
@@ -438,8 +466,6 @@
                     that.$set(that.$data.goods, "statusShow", that.$data.goods.status === 0)
                     that.$set(that.$data.goods, "updateUser", that.$store.getters.user.uid)
                     console.log(that);
-
-
                 })
             },
             successMsg(value) {

@@ -1,6 +1,6 @@
 const httpUtil = {
     baseurl(name){
-        const baseHost = "http://192.168.31.8:8088/";
+        const baseHost = "http://192.168.31.8:8082/";
         switch (name){
             case 'home':
                 return baseHost;
@@ -54,7 +54,6 @@ const httpUtil = {
         console.log(param)
         that.$http.post(this.baseurl(apiPath) + url, param, {emulateJSON:true})
             .then(response=>{
-                // console.log("response.status => "+response.status )
                 if(response.status !== 200){
                     that.$notify.error({
                         title: '失败',

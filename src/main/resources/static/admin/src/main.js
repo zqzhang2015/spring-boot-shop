@@ -7,12 +7,6 @@ import routes from './router/router'
 import VueRouter from "vue-router";
 import menu from './config/menu.js'
 import Vuex from 'vuex'
-import UserList from './components/user/List'
-import UserInfo from './components/user/info'
-import EnterpriseList from './components/enterprise/List'
-import Home from './components/Home'
-import AuthGroupEdit from './components/auth/AuthGroupEdit'
-import EditAuthValue from './components/auth/EditAuthValue'
 import Validate from './util/Validate'
 //引入字体图标库
 import "./assets/icomoon/style.css";
@@ -57,14 +51,6 @@ const vum = new Vue({
     el: '#app',
     router,
     store,
-    components:{
-        'UserList': UserList,
-        'UserInfo': UserInfo,
-        'EnterpriseList': EnterpriseList,
-        'Home': Home,
-        'AuthGroupEdit':AuthGroupEdit,
-        'EeditAuthValue': EditAuthValue,
-    },
     render: h => h(App)
 });
 

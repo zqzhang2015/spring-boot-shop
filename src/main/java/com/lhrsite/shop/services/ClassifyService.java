@@ -11,7 +11,7 @@ public interface ClassifyService {
     List<ClassifyVO> getClassifyTree();
     List<ClassifyVO> getFClassify();
 
-    Classify add(Classify classify);
+    Classify add(Classify classify) throws ErpException;
 
     Classify update(Classify classify);
     Classify findById(Integer clId) throws ErpException;

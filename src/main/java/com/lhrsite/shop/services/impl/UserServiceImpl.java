@@ -307,7 +307,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService  {
      */
     private UserVO userToUserVO(User user, boolean showPhoneNumber) throws ErpException {
         if (user == null){
-            throw new ErpException(ErrEumn.USER_NO_EXIT);
+            throw new ErpException(ErrEumn.USER_NO_EXIST);
         }
         List<User> users = new ArrayList<>();
         users.add(user);

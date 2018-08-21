@@ -98,13 +98,14 @@
 </template>
 
 <script>
+    import httpUtil from './util/HttpUtil.js';
+
     import Home from "./components/Home";
     import UserList from './components/user/List'
     import UserInfo from './components/user/Info'
     import UserEdit from './components/user/Edit'
     import EnterpriseList from './components/enterprise/List'
     import EnterpriseEdit from './components/enterprise/Edit'
-    import httpUtil from './util/HttpUtil.js';
     import MenuList from './components/auth/MenuList'
     import AuthGroup from './components/auth/AuthGroup'
     import AuthGroupEdit from './components/auth/AuthGroupEdit'
@@ -113,9 +114,9 @@
     import GoodsList from './components/goods/List'
     import GoodsEdit from './components/goods/Edit'
     import GoodsAdd from './components/goods/Edit'
+    import GoodsClass from './components/goods/Class'
 
     export default {
-
         components: {
             Home,
             UserList,
@@ -130,6 +131,7 @@
             GoodsList,
             GoodsAdd,
             GoodsEdit,
+            GoodsClass,
         },
         data() {
             return {
@@ -367,7 +369,11 @@
                     key.substring(0, '/goods/edit'.length) === '/goods/edit') {
                     this.addTab('编辑商品');
                 }
-                this.$router.push(key)
+                else if (key.length >= '/goods/class'.length &&
+                    key.substring(0, '/goods/class'.length) === '/goods/class') {
+                    this.addTab('分类管理');
+                }
+                console.log("路由跳转："+key)
 
             }
         }

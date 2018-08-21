@@ -198,7 +198,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     public List<OrderListVO> orderListByUser(String token, long page, long pageSize) throws ErpException {
         User user = userService.tokenGetUser(token);
         if (user == null){
-            throw new ErpException(ErrEumn.USER_NO_EXIT);
+            throw new ErpException(ErrEumn.USER_NO_EXIST);
         }
 
 
@@ -263,7 +263,6 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     private Goods getGoodsList(Goods goods){
         goods.setCreateTime(null);
         goods.setContent(null);
-        goods.setCover(null);
         goods.setDescribe(null);
         goods.setPictures(null);
         goods.setUpdateTime(null);

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.nio.file.OpenOption;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -98,6 +100,7 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
 
     @Override
     public Goods getById(String goodsId) {
-        return goodsRepository.findById(goodsId).get();
+        Optional<Goods> goodsOptional = goodsRepository.findById(goodsId);
+        return goodsOptional.orElse(null);
     }
 }

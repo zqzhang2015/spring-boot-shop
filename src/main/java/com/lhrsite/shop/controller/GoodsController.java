@@ -105,7 +105,10 @@ public class GoodsController {
         String fileName = file.getOriginalFilename();
         System.out.println("上传的文件名为：" + fileName);
         // 获取文件的后缀名
-        String suffixName = fileName.substring(fileName.lastIndexOf("."));
+        String suffixName = null;
+        if (fileName != null) {
+            suffixName = fileName.substring(fileName.lastIndexOf("."));
+        }
         fileName = UUID.randomUUID()+ suffixName;
         System.out.println("上传的后缀名为：" + suffixName);
         // 文件上传后的路径

@@ -1,11 +1,8 @@
 package com.lhrsite.shop.services.impl;
 
 
-import com.lhrsite.shop.VO.BuyCarVO;
-import com.lhrsite.shop.VO.OrderVO;
-import com.lhrsite.shop.entity.Order;
-import com.lhrsite.shop.entity.OrderDetails;
-import com.lhrsite.shop.entity.User;
+import com.lhrsite.shop.VO.*;
+import com.lhrsite.shop.entity.*;
 import com.lhrsite.shop.enums.ErrEumn;
 import com.lhrsite.shop.exception.ErpException;
 import com.lhrsite.shop.repository.OrderDetailsRepository;
@@ -13,7 +10,9 @@ import com.lhrsite.shop.repository.OrderRepository;
 import com.lhrsite.shop.services.BuyCarService;
 import com.lhrsite.shop.services.OrderService;
 import com.lhrsite.shop.services.UserService;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -162,13 +161,13 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     }
 
     private String randomOrderIdEnd(){
-        String orderIdEnd = "";
+        StringBuilder orderIdEnd = new StringBuilder();
         Random random = new Random();
         int[] array = random.ints(3,0, 10).toArray();
-        for (int i=0;i<array.length; i++){
-            orderIdEnd += array[i];
+        for (int anArray : array) {
+            orderIdEnd.append(anArray);
         }
-        return orderIdEnd;
+        return orderIdEnd.toString();
     }
     private OrderDetails buyCarVOSToOrderDetails(BuyCarVO buyCarVO, String orderId, int time){
         OrderDetails orderDetails = new OrderDetails();
@@ -181,11 +180,94 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         orderDetails.setOdId(orderId + str.toString());
         orderDetails.setGoodsId(buyCarVO.getGoods().getGoodsId());
         orderDetails.setNumber(buyCarVO.getNumber());
+        orderDetails.setTransactionPrice(
+                buyCarVO.getGoods().getSaleStatus() == 1 ?
+                        buyCarVO.getGoods().getSalePrice() :
+                        buyCarVO.getGoods().getOriginalPrice());
+        orderDetails.setOrderId(orderId);
+
         return orderDetails;
 
     }
     @Override
     public Order updateOrder(Order order) {
         return orderRepository.save(order);
+    }
+
+    @Override
+    public List<OrderListVO> orderListByUser(String token, long page, long pageSize) throws ErpException {
+        User user = userService.tokenGetUser(token);
+        if (user == null){
+            throw new ErpException(ErrEumn.USER_NO_EXIT);
+        }
+
+
+        QOrder qOrder = QOrder.order;
+
+        // 查询订单列表
+        List<Order> orders = queryFactory.selectFrom(qOrder)
+                .where(
+                        qOrder.userId.eq(user.getUid())
+                )
+                .orderBy(qOrder.createTime.desc())
+                .offset((page - 1) * pageSize)
+                .limit(pageSize)
+                .fetch();
+
+        List<String> orderListId = new ArrayList<>();
+        List<OrderListVO> orderListVOS = new ArrayList<>();
+        orders.forEach(order -> {
+            orderListId.add(order.getOrderId());
+            OrderListVO orderListVO = new OrderListVO();
+            BeanUtils.copyProperties(order, orderListVO);
+            orderListVO.setOrderInfoVOS(new ArrayList<>());
+            orderListVOS.add(orderListVO);
+
+        });
+
+
+        // 查询订单详情
+        QOrderDetails qOrderDetails = QOrderDetails.orderDetails;
+        QGoods qGoods = QGoods.goods;
+        List<OrderInfoVO> orderInfoVOS = queryFactory.select(Projections.bean(
+                OrderInfoVO.class,
+                qOrderDetails.odId,
+                qOrderDetails.orderId,
+                qOrderDetails.number,
+                QGoods.goods,
+                qOrderDetails.transactionPrice
+        ))
+                .from(qOrderDetails)
+                .join(qGoods)
+                .on(qGoods.goodsId.eq(qOrderDetails.goodsId))
+                .where(qOrderDetails.orderId.in(orderListId))
+                .orderBy(qOrderDetails.odId.desc())
+                .fetch();
+        orderListVOS.forEach(orderListVO -> {
+            orderInfoVOS.forEach(orderInfoVO -> {
+                if (orderInfoVO.getOrderId().equals(orderListVO.getOrderId())){
+
+                    orderInfoVO.setGoods(
+                            getGoodsList(
+                                    orderInfoVO.getGoods()));
+
+                    orderListVO.getOrderInfoVOS().add(orderInfoVO);
+                }
+            });
+        });
+
+
+        return orderListVOS;
+    }
+
+    private Goods getGoodsList(Goods goods){
+        goods.setCreateTime(null);
+        goods.setContent(null);
+        goods.setCover(null);
+        goods.setDescribe(null);
+        goods.setPictures(null);
+        goods.setUpdateTime(null);
+        goods.setUpdateUser(null);
+        return goods;
     }
 }

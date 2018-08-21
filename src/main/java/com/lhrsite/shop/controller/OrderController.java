@@ -9,6 +9,7 @@ import com.lhrsite.shop.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -44,6 +45,16 @@ public class OrderController {
     @PostMapping("/updateOrder")
     public String updateOrder(String token, Order order) throws ErpException {
         resultVO.setData(JSON.toJSONString(orderService.settleAccounts(token)));
+        return JSON.toJSONString(resultVO);
+    }
+
+
+    @PostMapping("/orderList")
+    public String getOrderList(String token,
+                               @RequestParam(defaultValue = "1") long page,
+                               @RequestParam(defaultValue = "5") long pageSize) throws ErpException {
+        resultVO.setData(JSON.toJSONString(
+                orderService.orderListByUser(token, page, pageSize)));
         return JSON.toJSONString(resultVO);
     }
 }

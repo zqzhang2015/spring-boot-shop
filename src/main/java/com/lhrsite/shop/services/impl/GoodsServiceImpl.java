@@ -80,7 +80,7 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
 
         PageVO<GoodsListVO> pageVO = new PageVO<>();
 
-        pageVO.init(jpaQuery, pageSize);
+        pageVO.init(jpaQuery, page);
 
         return pageVO;
     }

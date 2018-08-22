@@ -29,6 +29,6 @@ public class User implements Serializable {
     private java.sql.Timestamp createTime;
     @Column(insertable = false, updatable = false)
     private java.sql.Timestamp updateTime;
-
+    private Integer admin = 0;
 
 }

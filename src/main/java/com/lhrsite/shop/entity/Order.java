@@ -1,6 +1,7 @@
 package com.lhrsite.shop.entity;
 
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -8,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.sql.Date;
 
 @Data
 @Entity
@@ -24,7 +26,8 @@ public class Order {
   private BigDecimal offer;
   private Integer status;
   @Column(insertable = false, updatable = false)
-  private java.sql.Timestamp createTime;
+  @JSONField(format="yyyy-MM-dd HH:mm:ss")
+  private Date createTime;
 
 
 }

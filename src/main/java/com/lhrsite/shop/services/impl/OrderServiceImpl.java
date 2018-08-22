@@ -10,9 +10,12 @@ import com.lhrsite.shop.repository.OrderRepository;
 import com.lhrsite.shop.services.BuyCarService;
 import com.lhrsite.shop.services.OrderService;
 import com.lhrsite.shop.services.UserService;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -48,19 +51,19 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         List<BuyCarVO> buyCarVOS = buyCarService.getBuyCar(token);
         List<String> buyCarIds = new ArrayList<>();
 
-        if (buyCarVOS.size() == 0){
+        if (buyCarVOS.size() == 0) {
             // 购物车为空
             throw new ErpException(ErrEumn.BUY_CAR_IS_NULL);
         }
         Order order = new Order();
-        order.setOrderId(System.currentTimeMillis()+randomOrderIdEnd());
+        order.setOrderId(System.currentTimeMillis() + randomOrderIdEnd());
 
         List<OrderDetails> orderDetails = new ArrayList<>();
         BigDecimal orderAmount = new BigDecimal(0);
         BigDecimal despatchMoney = new BigDecimal(0);
         // 优惠
         BigDecimal offer = new BigDecimal(0);
-        for (int i = 0; i < buyCarVOS.size(); i++){
+        for (int i = 0; i < buyCarVOS.size(); i++) {
             buyCarIds.add(buyCarVOS.get(i).getId());
             orderDetails.add(buyCarVOSToOrderDetails(buyCarVOS.get(i), order.getOrderId(), i));
             // 算单个商品价格（价格*数量）
@@ -83,7 +86,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         orderVO.setOrder(order1);
         orderVO.setOrderDetails(orderDetailsRepository.saveAll(orderDetails));
         // 成功下单删除购物车商品
-        for (String buyCarId : buyCarIds){
+        for (String buyCarId : buyCarIds) {
             buyCarService.deleteBuyCar(buyCarId);
 
         }
@@ -93,7 +96,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     public Map<String, BigDecimal> settleAccounts(String token) throws ErpException {
         // 获取用户购物车
         List<BuyCarVO> buyCarVOS = buyCarService.getBuyCar(token);
-        if (buyCarVOS.size() == 0){
+        if (buyCarVOS.size() == 0) {
             // 购物车为空
             throw new ErpException(ErrEumn.BUY_CAR_IS_NULL);
         }
@@ -102,7 +105,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         BigDecimal despatchMoney = new BigDecimal(0);
         // 优惠
         BigDecimal offer = new BigDecimal(0);
-        for (int i = 0; i < buyCarVOS.size(); i++){
+        for (int i = 0; i < buyCarVOS.size(); i++) {
             Map<String, BigDecimal> result = settleAccountsOneGoods(buyCarVOS, orderAmount, offer, i, despatchMoney);
             orderAmount = result.get("orderAmount");
             despatchMoney = result.get("despatchMoney");
@@ -123,7 +126,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         result.put("offer", new BigDecimal(0));
         result.put("despatchMoney", new BigDecimal(0));
 
-        if (buyCarVOS.get(i).getGoods().getSaleStatus() == 1){
+        if (buyCarVOS.get(i).getGoods().getSaleStatus() == 1) {
             BigDecimal goodsSalePrice = buyCarVOS.get(i).getGoods()
                     .getSalePrice();
             BigDecimal number = new BigDecimal(buyCarVOS.get(i).getNumber());
@@ -139,7 +142,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
                     ).multiply(number)
             );
             result.put("offer", offer);
-        }else{
+        } else {
             BigDecimal goodsOriginalPrice = buyCarVOS.get(i).getGoods()
                     .getOriginalPrice();
             BigDecimal number = new BigDecimal(buyCarVOS.get(i).getNumber());
@@ -160,19 +163,20 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
 
     }
 
-    private String randomOrderIdEnd(){
+    private String randomOrderIdEnd() {
         StringBuilder orderIdEnd = new StringBuilder();
         Random random = new Random();
-        int[] array = random.ints(3,0, 10).toArray();
+        int[] array = random.ints(3, 0, 10).toArray();
         for (int anArray : array) {
             orderIdEnd.append(anArray);
         }
         return orderIdEnd.toString();
     }
-    private OrderDetails buyCarVOSToOrderDetails(BuyCarVO buyCarVO, String orderId, int time){
+
+    private OrderDetails buyCarVOSToOrderDetails(BuyCarVO buyCarVO, String orderId, int time) {
         OrderDetails orderDetails = new OrderDetails();
         StringBuilder str = new StringBuilder();
-        for (int i=0 ; i < (4 - String.valueOf(time).length()); i++){
+        for (int i = 0; i < (4 - String.valueOf(time).length()); i++) {
             str.append("0");
         }
         str.append(time);
@@ -189,6 +193,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         return orderDetails;
 
     }
+
     @Override
     public Order updateOrder(Order order) {
         return orderRepository.save(order);
@@ -197,18 +202,21 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     @Override
     public List<OrderListVO> orderListByUser(String token, long page, long pageSize) throws ErpException {
         User user = userService.tokenGetUser(token);
-        if (user == null){
+        if (user == null) {
             throw new ErpException(ErrEumn.USER_NO_EXIST);
         }
 
-
+        BooleanBuilder builder = new BooleanBuilder();
         QOrder qOrder = QOrder.order;
+
+        if(user.getAdmin() != 1){
+            builder.and(qOrder.userId.eq(user.getUid()));
+        }
+
 
         // 查询订单列表
         List<Order> orders = queryFactory.selectFrom(qOrder)
-                .where(
-                        qOrder.userId.eq(user.getUid())
-                )
+                .where(builder)
                 .orderBy(qOrder.createTime.desc())
                 .offset((page - 1) * pageSize)
                 .limit(pageSize)
@@ -245,7 +253,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
                 .fetch();
         orderListVOS.forEach(orderListVO -> {
             orderInfoVOS.forEach(orderInfoVO -> {
-                if (orderInfoVO.getOrderId().equals(orderListVO.getOrderId())){
+                if (orderInfoVO.getOrderId().equals(orderListVO.getOrderId())) {
 
                     orderInfoVO.setGoods(
                             getGoodsList(
@@ -260,7 +268,27 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         return orderListVOS;
     }
 
-    private Goods getGoodsList(Goods goods){
+    @Override
+    public PageVO<OrderListVO> list(String token, long page, long pageSize) throws ErpException {
+        User user = userService.tokenGetUser(token);
+
+
+        QOrder qOrder = QOrder.order;
+        JPAQuery<Order> orderJPAQuery = queryFactory.selectFrom(qOrder)
+                .where(
+                        qOrder.userId.eq(user.getUid())
+                )
+                .orderBy(qOrder.createTime.desc())
+                .offset((page - 1) * pageSize)
+                .limit(pageSize);
+        // 查询订单列表
+
+        PageVO<OrderListVO> pageVO = new PageVO<>();
+        pageVO.init(orderJPAQuery.fetchCount(), page, orderListByUser(token, page, pageSize));
+        return pageVO;
+    }
+
+    private Goods getGoodsList(Goods goods) {
         goods.setCreateTime(null);
         goods.setContent(null);
         goods.setDescribe(null);

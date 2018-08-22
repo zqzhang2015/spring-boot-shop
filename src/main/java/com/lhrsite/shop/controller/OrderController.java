@@ -57,4 +57,13 @@ public class OrderController {
                 orderService.orderListByUser(token, page, pageSize)));
         return JSON.toJSONString(resultVO);
     }
+
+    @PostMapping("/list")
+    public String list(String token,
+                               @RequestParam(defaultValue = "1") long page,
+                               @RequestParam(defaultValue = "5") long pageSize) throws ErpException {
+        resultVO.setData(JSON.toJSONString(
+                orderService.list(token, page, pageSize)));
+        return JSON.toJSONString(resultVO);
+    }
 }

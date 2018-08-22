@@ -2,6 +2,7 @@ package com.lhrsite.shop.services;
 
 import com.lhrsite.shop.VO.OrderListVO;
 import com.lhrsite.shop.VO.OrderVO;
+import com.lhrsite.shop.VO.PageVO;
 import com.lhrsite.shop.entity.Order;
 import com.lhrsite.shop.exception.ErpException;
 
@@ -22,5 +23,6 @@ public interface OrderService {
 
 
     List<OrderListVO> orderListByUser(String token, long page, long pageSize) throws ErpException;
+    PageVO<OrderListVO> list(String token, long page, long pageSize) throws ErpException;
 
 }

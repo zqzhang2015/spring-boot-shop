@@ -12,6 +12,8 @@ const httpUtil = {
                 return baseHost + 'auth/';
             case 'goods':
                 return baseHost + 'goods/';
+            case 'order':
+                return baseHost + 'order/';
             default:
                 return baseHost
         }

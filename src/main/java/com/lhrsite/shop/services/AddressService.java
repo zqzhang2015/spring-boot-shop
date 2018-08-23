@@ -2,6 +2,9 @@ package com.lhrsite.shop.services;
 
 
 import com.lhrsite.shop.entity.Address;
+import com.lhrsite.shop.exception.ErpException;
+
+import java.util.List;
 
 /**
  * (Address)表服务接口
@@ -18,15 +21,15 @@ public interface AddressService {
      * @param defaultStatus     是否默认收货地址
      * @return                  添加的收货地址
      */
-    Address add(String token, String address, Integer defaultStatus);
+    Address add(String token, String address, Integer defaultStatus) throws ErpException;
 
     /**
      * 更新默认收货地址
-     * @param uid           用户id
+     * @param token         用户token
      * @param addrId        欲设为默认地址的地址id
      * @return              设置后的对象
      */
-    Address updateDefaultAddr(Integer uid, Integer addrId);
+    Address updateDefaultAddr(String token, Integer addrId) throws ErpException;
 
     /**
      * 更新收货地址
@@ -34,15 +37,18 @@ public interface AddressService {
      * @param address       收货地址
      * @return              设置后的对象
      */
-    Address updateAddr(Integer addrId, String address);
+    Address updateAddr(Integer addrId, String address) throws ErpException;
 
     /**
      * 删除收货地址
      * @param token         用户token
      * @param addrId        地址id
      */
-    void delAddr(String token, Integer addrId);
+    void delAddr(String token, Integer addrId) throws ErpException;
 
+    List<Address> getAddress(String token);
+
+    Address getDefaultAddress(String token);
 
 
 }

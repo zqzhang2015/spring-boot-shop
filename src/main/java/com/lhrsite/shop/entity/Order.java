@@ -28,6 +28,7 @@ public class Order {
   @Column(insertable = false, updatable = false)
   @JSONField(format="yyyy-MM-dd HH:mm:ss")
   private Date createTime;
+  private Integer addrId;
 
 
 }

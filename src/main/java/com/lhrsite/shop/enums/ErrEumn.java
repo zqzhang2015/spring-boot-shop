@@ -48,6 +48,10 @@ public enum ErrEumn {
 
     CLASSIFY_IS_EXIST(-100026, "分类已存在！"),
 
+    ADDRESS_NOT_EXIST(-100027, "该地址不存在！"),
+    ONLY_DELETE_YOUERSELF_ADDRESS(-100028, "只能删除自己的地址！"),
+    NOT_DEFAULT_ADDRESS(-100029, "请在我的->收货地址中设置默认收获地址！"),
+
 
     ;
 

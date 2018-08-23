@@ -249,9 +249,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService  {
 
         UserLogin userLogin =
                 userLoginRepository.findByUserToken(token);
+        System.out.println(userLogin);
+        Optional<User> userOptional = userRepository
+                .findById(userLogin.getUserId());
 
-        return userRepository
-                .findById(userLogin.getUserId()).get();
+        return userOptional.orElse(null);
+
     }
 
 

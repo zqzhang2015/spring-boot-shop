@@ -7,6 +7,7 @@ import com.lhrsite.shop.enums.ErrEumn;
 import com.lhrsite.shop.exception.ErpException;
 import com.lhrsite.shop.repository.OrderDetailsRepository;
 import com.lhrsite.shop.repository.OrderRepository;
+import com.lhrsite.shop.services.AddressService;
 import com.lhrsite.shop.services.BuyCarService;
 import com.lhrsite.shop.services.OrderService;
 import com.lhrsite.shop.services.UserService;
@@ -15,7 +16,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -32,13 +32,15 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
 
     private final OrderDetailsRepository orderDetailsRepository;
     private final BuyCarService buyCarService;
+    private final AddressService addressService;
 
-    public OrderServiceImpl(EntityManager entityManager, OrderRepository orderRepository, UserService userService, OrderDetailsRepository orderDetailsRepository, BuyCarService buyCarService) {
+    public OrderServiceImpl(EntityManager entityManager, OrderRepository orderRepository, UserService userService, OrderDetailsRepository orderDetailsRepository, BuyCarService buyCarService, AddressService addressService) {
         super(entityManager);
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.orderDetailsRepository = orderDetailsRepository;
         this.buyCarService = buyCarService;
+        this.addressService = addressService;
         this.queryFactory = getQueryFactory();
 
     }
@@ -79,6 +81,13 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         order.setOrderAmount(orderAmount);
         order.setOffer(offer);
         order.setStatus(0);
+
+        // 获取默认收货地址
+        Address address = addressService.getDefaultAddress(token);
+        if (address == null){
+            throw new ErpException(ErrEumn.NOT_DEFAULT_ADDRESS);
+        }
+        order.setAddrId(address.getId());
 
         OrderVO orderVO = new OrderVO();
         Order order1 = orderRepository.save(order);

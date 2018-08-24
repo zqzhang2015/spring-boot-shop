@@ -2,10 +2,12 @@ package com.lhrsite.shop.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lhrsite.shop.VO.ResultVO;
 import com.lhrsite.shop.entity.Order;
 import com.lhrsite.shop.exception.ErpException;
 import com.lhrsite.shop.services.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/order")
+@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
@@ -62,8 +65,8 @@ public class OrderController {
     public String list(String token,
                                @RequestParam(defaultValue = "1") long page,
                                @RequestParam(defaultValue = "5") long pageSize) throws ErpException {
-        resultVO.setData(JSON.toJSONString(
-                orderService.list(token, page, pageSize)));
+        resultVO.setData(JSON.toJSONStringWithDateFormat(
+                orderService.list(token, page, pageSize),"yyyy-MM-dd HH:mm:ss", SerializerFeature.DisableCircularReferenceDetect));
         return JSON.toJSONString(resultVO);
     }
 }

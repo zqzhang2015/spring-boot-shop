@@ -5,6 +5,7 @@ import com.lhrsite.shop.VO.*;
 import com.lhrsite.shop.entity.*;
 import com.lhrsite.shop.enums.ErrEumn;
 import com.lhrsite.shop.exception.ErpException;
+import com.lhrsite.shop.repository.GoodsRepository;
 import com.lhrsite.shop.repository.OrderDetailsRepository;
 import com.lhrsite.shop.repository.OrderRepository;
 import com.lhrsite.shop.services.AddressService;
@@ -15,7 +16,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -34,13 +34,15 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
     private final BuyCarService buyCarService;
     private final AddressService addressService;
 
-    public OrderServiceImpl(EntityManager entityManager, OrderRepository orderRepository, UserService userService, OrderDetailsRepository orderDetailsRepository, BuyCarService buyCarService, AddressService addressService) {
+    private final GoodsRepository goodsRepository;
+    public OrderServiceImpl(EntityManager entityManager, OrderRepository orderRepository, UserService userService, OrderDetailsRepository orderDetailsRepository, BuyCarService buyCarService, AddressService addressService, GoodsRepository goodsRepository) {
         super(entityManager);
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.orderDetailsRepository = orderDetailsRepository;
         this.buyCarService = buyCarService;
         this.addressService = addressService;
+        this.goodsRepository = goodsRepository;
         this.queryFactory = getQueryFactory();
 
     }
@@ -84,7 +86,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
 
         // 获取默认收货地址
         Address address = addressService.getDefaultAddress(token);
-        if (address == null){
+        if (address == null) {
             throw new ErpException(ErrEumn.NOT_DEFAULT_ADDRESS);
         }
         order.setAddrId(address.getId());
@@ -97,8 +99,15 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         // 成功下单删除购物车商品
         for (String buyCarId : buyCarIds) {
             buyCarService.deleteBuyCar(buyCarId);
-
         }
+        //下单成功减少库存
+        List<Goods> goodses = new ArrayList<>();
+        buyCarVOS.forEach(buyCarVO -> {
+            Goods goods = buyCarVO.getGoods();
+            goods.setStock(goods.getStock() - buyCarVO.getNumber());
+            goodses.add(goods);
+        });
+        goodsRepository.saveAll(goodses);
         return orderVO;
     }
 
@@ -218,29 +227,64 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         BooleanBuilder builder = new BooleanBuilder();
         QOrder qOrder = QOrder.order;
 
-        if(user.getAdmin() != 1){
+        if (user.getAdmin() != 1) {
             builder.and(qOrder.userId.eq(user.getUid()));
         }
 
+        QUser qUser = QUser.user;
 
         // 查询订单列表
-        List<Order> orders = queryFactory.selectFrom(qOrder)
+//        List<Order> orders = queryFactory.selectFrom(qOrder)
+//                .where(builder)
+//                .orderBy(qOrder.createTime.desc())
+//                .offset((page - 1) * pageSize)
+//                .limit(pageSize)
+//                .fetch();
+        QAddress qAddress = QAddress.address;
+        List<OrderListVO> orders = queryFactory.select(
+                Projections.bean(
+                        OrderListVO.class,
+                        qOrder.orderId,
+                        qOrder.userId,
+                        qOrder.orderAmount,
+                        qOrder.despatchMoney,
+                        qOrder.offer,
+                        qOrder.status,
+                        qOrder.createTime,
+                        qUser.username,
+                        qUser.phone,
+                        qUser.email,
+                        qAddress.addr
+                )
+        ).from(qOrder)
+                .leftJoin(qUser).on(qOrder.userId.eq(qUser.uid))
+                .leftJoin(qAddress).on(qUser.uid.eq(qAddress.uid)
+                        .and(qAddress.defaultStatus.eq(1)))
                 .where(builder)
                 .orderBy(qOrder.createTime.desc())
                 .offset((page - 1) * pageSize)
                 .limit(pageSize)
                 .fetch();
+        System.out.println(orders);
 
         List<String> orderListId = new ArrayList<>();
-        List<OrderListVO> orderListVOS = new ArrayList<>();
-        orders.forEach(order -> {
-            orderListId.add(order.getOrderId());
-            OrderListVO orderListVO = new OrderListVO();
-            BeanUtils.copyProperties(order, orderListVO);
+        orders.forEach(orderListVO -> {
+            orderListId.add(orderListVO.getOrderId());
+            // 设置订单总价 总价 = 快递费+商品费用
+            orderListVO.setOrderMoney(new BigDecimal(0)
+                    .add(orderListVO.getDespatchMoney()
+                            .add(orderListVO.getOrderAmount())));
             orderListVO.setOrderInfoVOS(new ArrayList<>());
-            orderListVOS.add(orderListVO);
-
         });
+//        List<OrderListVO> orderListVOS = new ArrayList<>();
+//        orders.forEach(order -> {
+//            orderListId.add(order.getOrderId());
+//            OrderListVO orderListVO = new OrderListVO();
+//            BeanUtils.copyProperties(order, orderListVO);
+//            orderListVO.setOrderInfoVOS(new ArrayList<>());
+//            orderListVOS.add(orderListVO);
+//
+//        });
 
 
         // 查询订单详情
@@ -260,7 +304,7 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
                 .where(qOrderDetails.orderId.in(orderListId))
                 .orderBy(qOrderDetails.odId.desc())
                 .fetch();
-        orderListVOS.forEach(orderListVO -> {
+        orders.forEach(orderListVO -> {
             orderInfoVOS.forEach(orderInfoVO -> {
                 if (orderInfoVO.getOrderId().equals(orderListVO.getOrderId())) {
 
@@ -274,13 +318,12 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         });
 
 
-        return orderListVOS;
+        return orders;
     }
 
     @Override
     public PageVO<OrderListVO> list(String token, long page, long pageSize) throws ErpException {
         User user = userService.tokenGetUser(token);
-
 
         QOrder qOrder = QOrder.order;
         JPAQuery<Order> orderJPAQuery = queryFactory.selectFrom(qOrder)

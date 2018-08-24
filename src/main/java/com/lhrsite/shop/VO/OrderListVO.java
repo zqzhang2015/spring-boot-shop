@@ -14,6 +14,7 @@ public class OrderListVO {
 
     private String orderId;
     private Integer userId;
+    private BigDecimal orderMoney;
     private BigDecimal orderAmount;
     private BigDecimal despatchMoney;
     // 优惠
@@ -22,5 +23,9 @@ public class OrderListVO {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     private List<OrderInfoVO> orderInfoVOS;
+    private String username;
+    private String phone;
+    private String email;
+    private String addr;
 
 }

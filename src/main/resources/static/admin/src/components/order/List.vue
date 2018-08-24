@@ -34,28 +34,52 @@
                 stripe
                 @select="tableItemSelect"
                 @select-all="tableItemSelectAll"
-                highlight-current-row
-                max-height="7000">
+                highlight-current-row>
             <el-table-column
                     fixed
                     prop="orderId"
                     label="订单id"
-                    min-width="200">
+                    min-width="100">
+            </el-table-column>
+            <el-table-column
+                    prop="orderMoney"
+                    label="订单总价"
+                    min-width="70">
             </el-table-column>
             <el-table-column
                     prop="orderAmount"
                     label="商品总价"
-                    width="100">
+                    min-width="70">
             </el-table-column>
             <el-table-column
                     prop="despatchMoney"
                     label="总运费"
-                    width="130">
+                    min-width="70">
             </el-table-column>
             <el-table-column
                     prop="offer"
                     label="优惠"
-                    width="160">
+                    min-width="70">
+            </el-table-column>
+            <el-table-column
+                    prop="username"
+                    label="用户名"
+                    min-width="70">
+            </el-table-column>
+            <el-table-column
+                    prop="phone"
+                    label="手机号"
+                    min-width="70">
+            </el-table-column>
+            <el-table-column
+                    prop="email"
+                    label="邮箱"
+                    min-width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="addr"
+                    label="收货地址"
+                    min-width="150">
             </el-table-column>
             <!--<el-table-column-->
             <!--prop="cover"-->
@@ -65,19 +89,19 @@
             <el-table-column
                     prop="status"
                     label="状态"
-                    width="用户手机号">
+                    min-width="70">
             </el-table-column>
             <el-table-column
                     prop="createTime"
                     label="创建时间"
-                    width="200">
+                    min-width="100">
             </el-table-column>
             <el-table-column
                     fixed="right"
                     label="操作"
-                    width="100">
+                    min-width="100">
                 <template slot-scope="scope">
-                    <el-button type="success" size="mini" plain @click="jumpEdit(scope.row)">编辑</el-button>
+                    <el-button type="success" size="mini" plain @click="openDetails(scope.row)">详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -95,6 +119,51 @@
             <span slot="footer" class="dialog-footer">
             <el-button size="mini" type="primary" @click="information = false">确 定</el-button>
         </span>
+        </el-dialog>
+
+        <el-dialog
+                title="订单详情"
+                :visible.sync="orderInfoShow"
+                width="30%">
+            <div>
+                <div>
+                    <label>订单id</label>
+                    <span>{{orderDetails.orderId}}</span>
+                </div>
+                <div>
+                    <label>用户名称</label>
+                    <span>{{orderDetails.username}}</span>
+                </div>
+                <div>
+                    <label>用户手机号</label>
+                    <span>{{orderDetails.phone}}</span>
+                </div>
+                <div>
+                    <label>用户邮箱</label>
+                    <span>{{orderDetails.email}}</span>
+                </div>
+                <el-card class="box-card" v-for="(orderInfoVO, index) in orderDetails.orderInfoVOS" :key="index">
+                    <div slot="header" class="clearfix">
+                        <span>{{orderInfoVO.goods.title}} <small style="color: #ff0000;">x{{orderInfoVO.number}}</small></span>
+                        <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                    </div>
+                    <div>
+                        商品原价：{{orderInfoVO.goods.originalPrice}}
+                    </div>
+                    <div>
+                        促销价：{{orderInfoVO.goods.salePrice}}
+                    </div>
+                    <div>
+                        促销状态：{{orderInfoVO.goods.saleStatus === 0 ? '未促销' : '促销'}}
+                    </div>
+                    <div>
+                        库存：{{orderInfoVO.goods.stock}}
+                    </div>
+                    <div>
+                        运费：{{orderInfoVO.goods.despatchMoney}}
+                    </div>
+                </el-card>
+            </div>
         </el-dialog>
     </el-card>
 </template>
@@ -133,8 +202,8 @@
                 //totalElements: 0,
                 tableData: [],
                 enterpriseList: [], //企业列表
-
-
+                orderInfoShow:false,
+                orderDetails: {},
             }
         },
         methods: {
@@ -185,6 +254,7 @@
                 }, function (resp) {
 
                     let data = JSON.parse(resp.data.data);
+                    console.log(data)
                     // const data = JSON.parse(resp.body.data);
                     // console.log(data);
                     that.$set(that.$data, 'tableData', data.arr);
@@ -198,13 +268,10 @@
                     that.$set(that.$data, 'loading', false);
                 })
             },
-            jumpEdit(row) {
+            openDetails(row) {
                 console.log(row);
-                // this.clickPhone = row.phone;
-                // console.log(this.clickPhone)
-                sessionStorage.setItem("goodsIdEdit", row.goodsId);
-                this.$emit('eleven', '/goods/edit/');
-                //console.log(row.ui
+                this.$set(this.$data, 'orderDetails', row);
+                this.$set(this.$data, 'orderInfoShow', true)
             },
             jumpAdd(row) {
                 this.$emit('eleven', '/goods/edit/');

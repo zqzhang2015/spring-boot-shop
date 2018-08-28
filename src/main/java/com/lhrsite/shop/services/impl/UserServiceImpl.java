@@ -87,6 +87,37 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService  {
     }
 
     @Override
+    public UserVO loginAdmin(String phoneNumber, String password, HttpServletRequest request) throws ErpException {
+        User user = userRepository.findByPhone(phoneNumber);
+        if (user.getAdmin() == 0){
+            throw new ErpException(ErrEumn.NOT_ADMIN);
+        }
+        if (user != null &&
+                user.getPassword().equals(EncryptUtil.encryptPassword(password))){
+            UserLogin userLogin = new UserLogin();
+            userLogin.setId(EncryptUtil.encryptPassword(UUID.randomUUID().toString()));
+            userLogin.setLoginIp(IpUtil.getIpAddress(request));
+            userLogin.setUserToken(
+                    EncryptUtil.encryptPassword(
+                            UUID.randomUUID()
+                                    .toString()));
+            userLogin.setUserId(user.getUid());
+
+            userLogin.setExpireTime(new Timestamp(
+                    TimeUtil.addDay(new Date(), 30).getTime()
+            ));
+
+            userLogin = userLoginRepository.save(userLogin);
+
+            UserVO userVO = userToUserVO(user, false);
+            userVO.setToken(userLogin.getUserToken());
+            return userVO;
+        }else {
+            throw new ErpException(ErrEumn.LOGIN_ERR);
+        }
+    }
+
+    @Override
     public UserVO tokenCanUse(String token) throws ErpException {
         UserLogin userLogin = userLoginRepository.findByUserToken(token);
         Optional<User> oul;
@@ -255,6 +286,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService  {
 
         return userOptional.orElse(null);
 
+    }
+
+    @Override
+    public User UpPassword(String token, String oldPassword, String newPassword) throws ErpException {
+        if (newPassword.length() < 6){
+            throw new ErpException(ErrEumn.PASSWORD_NOT6);
+        }
+        User user = this.tokenGetUser(token);
+        if (user.getPassword().equals(EncryptUtil.encryptPassword(oldPassword))){
+            user.setPassword(EncryptUtil.encryptPassword(newPassword));
+        }
+        return userRepository.save(user);
     }
 
 

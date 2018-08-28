@@ -16,7 +16,8 @@ public interface UserService {
 
     UserVO login(String phoneNumber, String password,
                  HttpServletRequest request) throws ErpException;
-
+    UserVO loginAdmin(String phoneNumber, String password,
+                 HttpServletRequest request) throws ErpException;
     /**
      * use token get user object
      * @param token The token obtained by the user login
@@ -49,6 +50,7 @@ public interface UserService {
     UserVO delUser(User user) throws ErpException;
 
     User tokenGetUser(String token);
+    User UpPassword(String token, String oldPassword, String newPassword) throws ErpException;
 
     void phoneIsExist(String phone) throws ErpException;
 

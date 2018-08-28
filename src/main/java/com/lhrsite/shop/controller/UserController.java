@@ -23,9 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class UserController {
 
-
-
-
     private final UserService userService;
     private ResultVO resultVO;
 
@@ -56,6 +53,16 @@ public class UserController {
         return JSON.toJSONString(resultVO);
     }
 
+    @PostMapping("/loginAdmin")
+    public String loginAdmin(String phone,
+                        String password,
+                        HttpServletRequest request)
+            throws ErpException {
+        log.info("【登录】phone={}, password={}", phone, password);
+        resultVO.setData(JSON.toJSONString(userService.loginAdmin(phone, password, request)));
+        return JSON.toJSONString(resultVO);
+    }
+
     @PostMapping("/tokenUse")
     public String tokenUse(String token) throws ErpException {
         log.info("【验证token是否可用】token={}", token);
@@ -63,9 +70,6 @@ public class UserController {
         resultVO.setData(JSON.toJSONString(userService.tokenCanUse(token)));
         return JSON.toJSONString(resultVO);
     }
-
-
-
 
     @PostMapping("/userList")
     public String userList(
@@ -121,10 +125,11 @@ public class UserController {
             throw new ErpException(ErrEumn.ADD_USER_PHONE_IS_NULL);
         }
         if (user.getEnterprise() == null){
-            throw new ErpException(ErrEumn.ADD_USER_ENTERPRISE_IS_NULL);
+            user.setEnterprise(0);
         }
         if (user.getStatus() == null){
-            throw new ErpException(ErrEumn.ADD_USER_STATUS_IS_NULL);
+            user.setStatus(0);
+
         }
         if (user.getHeader() == null){
             user.setHeader("");
@@ -135,11 +140,18 @@ public class UserController {
         if (user.getAuthGroup() == null){
             user.setAuthGroup(0);
         }
+        if (user.getAdmin() == null){
+            user.setAdmin(0);
+        }
 
         resultVO.setData(JSON.toJSONString(userService.addUser(user)));
         return JSON.toJSONString(resultVO);
     }
-
+    @PostMapping("/upPassword")
+    public String upPassword(String token, String oldPassword, String newPassword) throws ErpException {
+        resultVO.setData(JSON.toJSONString(userService.UpPassword(token, oldPassword, newPassword)));
+        return JSON.toJSONString(resultVO);
+    }
     @PostMapping("/editUser")
     public String editUser(User user) throws ErpException {
         log.info("【修改用户】user={}", user);

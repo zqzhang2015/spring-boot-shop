@@ -10,6 +10,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
 
 
@@ -33,7 +35,7 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
     }
 
     @Override
-    public PageVO<GoodsListVO> getGoodsList(String title, long page, long pageSize) {
+    public PageVO<GoodsListVO> getGoodsList(String title, Integer cid, long page, long pageSize) {
 
         QGoods qGoods = QGoods.goods;
         QUser quser = QUser.user;
@@ -42,7 +44,10 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
         if (title != null && !title.equals("")){
             builder.and(qGoods.title.like("%" + title + "%"));
         }
-
+        if (cid != null){
+            builder.and(qGoods.clId.eq(cid));
+        }
+        log.info("【分页】page={}, pageSize={}", page, pageSize);
 
         JPAQuery<GoodsListVO> jpaQuery = queryFactory
                 .select(
@@ -85,11 +90,14 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
         return pageVO;
     }
 
+
     @Override
     public Goods addGoods(Goods goods) {
         //月销量0
         goods.setSalesVolume(0);
-        goods.setGoodsId(EncryptUtil.encryptPassword(UUID.randomUUID().toString()));
+        if (goods.getGoodsId() == null || "".equals(goods.getGoodsId())){
+            goods.setGoodsId(EncryptUtil.encryptPassword(UUID.randomUUID().toString()));
+        }
         return goodsRepository.save(goods);
     }
 

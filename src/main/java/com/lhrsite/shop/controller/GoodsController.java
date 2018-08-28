@@ -45,16 +45,18 @@ public class GoodsController {
     }
 
     @PostMapping("/list")
-    public String list(String title,
+    public String list(@RequestParam(required = false) String title,
+                       @RequestParam(required = false) Integer cid,
                        @RequestParam(defaultValue = "1") long page,
                        @RequestParam(defaultValue = "10") long pageSize){
         resultVO.setData(
                 JSON.toJSONString(
-                        goodsService.getGoodsList(title, page, pageSize)
+                        goodsService.getGoodsList(title, cid, page, pageSize)
                 )
         );
         return JSON.toJSONString(resultVO);
     }
+
 
     @PostMapping("/info")
     public String info(String goodsId){
@@ -62,7 +64,7 @@ public class GoodsController {
         return JSON.toJSONString(resultVO);
     }
 
-    @GetMapping("/classifyTree")
+    @RequestMapping("/classifyTree")
     public String classifyTree(){
         resultVO.setData(JSON.toJSONString(classifyService.getClassifyTree()));
         return JSON.toJSONString(resultVO);

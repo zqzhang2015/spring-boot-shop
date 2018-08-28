@@ -10,7 +10,7 @@
                         :background-color="backgroundColor"
                         text-color="#fff"
                         active-text-color="#99CCFF">
-                    <el-menu-item index="spterp">商品砼ERP</el-menu-item>
+                    <el-menu-item index="spterp"></el-menu-item>
                     <el-menu-item class="right-menu-item" v-if="store.login === 0" index="#" @click="loginWindow=true">
                         登录
                     </el-menu-item>
@@ -67,7 +67,7 @@
                             </el-tab-pane>
                         </el-tabs>
                     </el-main>
-                    <el-footer>Copyright © 2018, Content By 河南砼鑫软件科技有限公司 保留所有权利.</el-footer>
+                    <el-footer>Copyright © 2018, Content By lhr 保留所有权利.</el-footer>
                 </el-container>
             </el-container>
         </el-container>
@@ -260,7 +260,7 @@
                 const that = this;
                 that.$refs[formName].validate((valid) => {
                     if (valid) {
-                        httpUtil.post(that, 'user', 'login', that.loginForm,function(data){
+                        httpUtil.post(that, 'user', 'loginAdmin', that.loginForm,function(data){
                             const dt = data.body;
                             //console.log(dt)
                             //console.log(dt.code)

@@ -17,14 +17,14 @@
                 </el-button>
             </template>
 
-            <el-form :inline="true" :model="param" class="demo-form-inline">
-                <el-form-item label="商品标题">
-                    <el-input size="mini" v-model="param.title" placeholder="可模糊关键字"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button size="mini" type="primary" plain icon="el-icon-search" @click="onSubmit">查询</el-button>
-                </el-form-item>
-            </el-form>
+            <!--<el-form :inline="true" :model="param" class="demo-form-inline">-->
+                <!--<el-form-item label="商品标题">-->
+                    <!--<el-input size="mini" v-model="param.title" placeholder="可模糊关键字"></el-input>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item>-->
+                    <!--<el-button size="mini" type="primary" plain icon="el-icon-search" @click="onSubmit">查询</el-button>-->
+                <!--</el-form-item>-->
+            <!--</el-form>-->
         </div>
         <el-table
                 :data="tableData"
@@ -124,7 +124,7 @@
         <el-dialog
                 title="订单详情"
                 :visible.sync="orderInfoShow"
-                width="30%">
+                width="100%" style=" height:100%">
             <div>
                 <div>
                     <label>订单id</label>

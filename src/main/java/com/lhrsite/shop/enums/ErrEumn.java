@@ -51,6 +51,8 @@ public enum ErrEumn {
     ADDRESS_NOT_EXIST(-100027, "该地址不存在！"),
     ONLY_DELETE_YOUERSELF_ADDRESS(-100028, "只能删除自己的地址！"),
     NOT_DEFAULT_ADDRESS(-100029, "请在我的->收货地址中设置默认收获地址！"),
+    PASSWORD_NOT6(-100030, "密码不能少于6位"),
+    NOT_ADMIN(-100031, "只有管理员才能登录后台"),
 
 
     ;

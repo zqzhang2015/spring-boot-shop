@@ -7,7 +7,7 @@ import com.lhrsite.shop.entity.Goods;
 public interface GoodsService {
 
 
-    PageVO<GoodsListVO> getGoodsList(String title, long page, long pageSize);
+    PageVO<GoodsListVO> getGoodsList(String title, Integer cid, long page, long pageSize);
 
     Goods addGoods(Goods goods);
 

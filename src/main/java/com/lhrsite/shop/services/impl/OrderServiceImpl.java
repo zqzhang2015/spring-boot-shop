@@ -105,6 +105,8 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         buyCarVOS.forEach(buyCarVO -> {
             Goods goods = buyCarVO.getGoods();
             goods.setStock(goods.getStock() - buyCarVO.getNumber());
+            // 销量累加
+            goods.setSalesVolume(goods.getSalesVolume() + buyCarVO.getNumber());
             goodses.add(goods);
         });
         goodsRepository.saveAll(goodses);

@@ -14,7 +14,7 @@ import EditAuthValue from '../components/auth/EditAuthValue'
 import GoodsList from '../components/goods/List'
 import GoodsEdit from '../components/goods/Edit'
 import OrderList from '../components/order/List'
-
+import SystemIndex from '../components/system/Index'
 const routes = [
     {
         path: '/user',
@@ -87,6 +87,15 @@ const routes = [
             {
                 path : 'list',
                 component: OrderList
+            }
+        ]
+    },{
+        path: '/system',
+        component: SystemIndex,
+        children: [
+            {
+                path : 'index',
+                component: SystemIndex
             }
         ]
     }

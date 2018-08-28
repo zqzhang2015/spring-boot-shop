@@ -1,4 +1,9 @@
 export default {
+    系统管理:{
+        name: '系统管理',
+        path: '/system/index',
+        componentName: 'SystemIndex'
+    },
     订单列表:{
         name: '订单列表',
         path: '/order/list',

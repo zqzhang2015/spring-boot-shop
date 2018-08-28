@@ -80,7 +80,7 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
                 .offset((page - 1) * pageSize)
                 .limit(pageSize)
                 .where(builder)
-                .orderBy(qGoods.updateTime.desc());
+                .orderBy(qGoods.salesVolume.asc());
 
 
         PageVO<GoodsListVO> pageVO = new PageVO<>();

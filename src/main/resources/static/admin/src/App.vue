@@ -10,7 +10,7 @@
                         :background-color="backgroundColor"
                         text-color="#fff"
                         active-text-color="#99CCFF">
-                    <el-menu-item index="spterp"></el-menu-item>
+                    <el-menu-item index="spterp">选货邦后台管理系统</el-menu-item>
                     <el-menu-item class="right-menu-item" v-if="store.login === 0" index="#" @click="loginWindow=true">
                         登录
                     </el-menu-item>
@@ -115,6 +115,9 @@
     import GoodsEdit from './components/goods/Edit'
     import GoodsAdd from './components/goods/Edit'
     import OrderList from './components/order/list'
+    import SystemIndex from './components/system/Index'
+
+
     export default {
         components: {
             Home,
@@ -130,7 +133,8 @@
             GoodsList,
             GoodsAdd,
             GoodsEdit,
-            OrderList
+            OrderList,
+            SystemIndex
         },
         data() {
             return {
@@ -197,6 +201,15 @@
                             {
                                 itemIndex: '/order/list',
                                 itemName: '订单列表'
+                            },
+                        ]
+                    },{
+                        menuIndex: 'system',
+                        menuName: '系统管理',
+                        menuItems: [
+                            {
+                                itemIndex: '/system/index',
+                                itemName: '系统管理'
                             },
                         ]
                     }
@@ -381,6 +394,9 @@
                 else if (key.length >= '/order/list'.length &&
                     key.substring(0, '/order/list'.length) === '/order/list') {
                     this.addTab('订单列表');
+                }else if (key.length >= '/system/index'.length &&
+                    key.substring(0, '/system/index'.length) === '/system/index') {
+                    this.addTab('系统管理');
                 }
                 console.log("路由跳转："+key)
 

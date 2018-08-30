@@ -8,8 +8,13 @@ spring:
     show-sql: true
     properties:
         hibernate.format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
 server:
   port: 8082
+
 
 
 app:
@@ -17,5 +22,6 @@ app:
     shop:
       cover: /Users/lhr/Desktop/shop/cover_upload/
       pictures: /Users/lhr/Desktop/shop/pictures_upload/
-
+    home:
+      pictures: /Users/lhr/Desktop/shop/home_upload/
 

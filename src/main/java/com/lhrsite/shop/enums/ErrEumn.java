@@ -53,7 +53,7 @@ public enum ErrEumn {
     NOT_DEFAULT_ADDRESS(-100029, "请在我的->收货地址中设置默认收获地址！"),
     PASSWORD_NOT6(-100030, "密码不能少于6位"),
     NOT_ADMIN(-100031, "只有管理员才能登录后台"),
-
+    ONLY_ADMIN_CAN_DO(-100032, "只有管理员才能进行操作！"),
 
     ;
 

@@ -10,6 +10,7 @@ import com.lhrsite.shop.enums.ErrEumn;
 import com.lhrsite.shop.exception.ErpException;
 import com.lhrsite.shop.services.ClassifyService;
 import com.lhrsite.shop.services.GoodsService;
+import com.lhrsite.shop.util.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,44 +104,7 @@ public class GoodsController {
 
 
 
-    private JSONObject saveFile(String path, MultipartFile file) throws ErpException {
-        String fileName = file.getOriginalFilename();
-        System.out.println("上传的文件名为：" + fileName);
-        // 获取文件的后缀名
-        String suffixName = null;
-        if (fileName != null) {
-            suffixName = fileName.substring(fileName.lastIndexOf("."));
-        }
-        fileName = UUID.randomUUID()+ suffixName;
-        System.out.println("上传的后缀名为：" + suffixName);
-        // 文件上传后的路径
-        // 解决中文问题，liunx下中文路径，图片显示问题
-        // fileName = UUID.randomUUID() + suffixName;
-        File dest = new File(path + fileName);
-        // 检测是否存在目录
-        if (!dest.getParentFile().exists()) {
-            dest.getParentFile().mkdirs();
-        }
-        try {
-            file.transferTo(dest);
-            System.out.println("上传成功后的文件路径未：" + path + fileName);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("file", fileName);
-            return jsonObject;
-        } catch (IllegalStateException | IOException e) {
-            e.printStackTrace();
-        }
-        throw new ErpException(ErrEumn.UPLOAD_ERROR);
 
-    }
-
-    private List<JSONObject> saveFile(String path, MultipartFile[] files) throws ErpException {
-        List<JSONObject> jsonObjects = new ArrayList<>();
-        for (MultipartFile file : files){
-            jsonObjects.add(saveFile(path, file));
-        }
-        return jsonObjects;
-    }
 
     @RequestMapping(value = "/coverUpload", method = RequestMethod.POST)
     public String coverUpload(@RequestParam(value = "file") MultipartFile file)
@@ -148,7 +112,7 @@ public class GoodsController {
         if (file.isEmpty()) {
             throw new ErpException(ErrEumn.UPLOAD_ERROR_FILE_NULL);
         }
-        resultVO.setData(JSON.toJSONString(saveFile(coverUploadDir, file)));
+        resultVO.setData(JSON.toJSONString(HttpUtil.saveFile(coverUploadDir, file)));
         return JSON.toJSONString(resultVO);
 
     }
@@ -156,7 +120,7 @@ public class GoodsController {
     @RequestMapping(value = "/picturesUpload", method = RequestMethod.POST)
     public String picturesUpload(@RequestParam(value = "file") MultipartFile file)
             throws RuntimeException, ErpException {
-        resultVO.setData(JSON.toJSONString(saveFile(picturesUploadDir, file)));
+        resultVO.setData(JSON.toJSONString(HttpUtil.saveFile(picturesUploadDir, file)));
         return JSON.toJSONString(resultVO);
     }
 
@@ -175,22 +139,7 @@ public class GoodsController {
         System.out.println(filePath + fileName);
 
         response.setContentType("image/*");
-        try {
-            FileInputStream inputStream = new FileInputStream(filePath + fileName);
-            int i = inputStream.available();
-            byte[] buff = new byte[i];
-            inputStream.read(buff);
-            //记得关闭输入流
-            inputStream.close();
-
-            response.setContentType("image/*");
-            OutputStream out = response.getOutputStream();
-            out.write(buff);
-            //关闭响应输出流
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        HttpUtil.up(response, fileName, filePath);
     }
 
 

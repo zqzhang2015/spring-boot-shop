@@ -1,6 +1,9 @@
 package com.lhrsite.shop.services.impl;
 
 import com.lhrsite.shop.entity.App;
+import com.lhrsite.shop.entity.User;
+import com.lhrsite.shop.enums.ErrEumn;
+import com.lhrsite.shop.exception.ErpException;
 import com.lhrsite.shop.repository.AppRepository;
 import com.lhrsite.shop.services.AppService;
 import com.lhrsite.shop.services.UserService;
@@ -38,7 +41,11 @@ public class AppServiceImpl extends BaseServiceImpl implements AppService {
     }
 
     @Override
-    public void edit(App app) {
+    public void edit(App app, String token) throws ErpException {
+        User user = userService.tokenGetUser(token);
+        if (user == null || user.getAdmin() != 1){
+            throw new ErpException(ErrEumn.ONLY_ADMIN_CAN_DO);
+        }
         app.setId(1);
         appRepository.save(app);
     }

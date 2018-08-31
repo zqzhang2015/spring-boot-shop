@@ -342,6 +342,87 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
         return pageVO;
     }
 
+    @Override
+    public OrderListVO order(String orderId) {
+
+
+        QOrder qOrder = QOrder.order;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(qOrder.orderId.eq(orderId));
+
+        QUser qUser = QUser.user;
+
+        QAddress qAddress = QAddress.address;
+        List<OrderListVO> orders = queryFactory.select(
+                Projections.bean(
+                        OrderListVO.class,
+                        qOrder.orderId,
+                        qOrder.userId,
+                        qOrder.orderAmount,
+                        qOrder.despatchMoney,
+                        qOrder.offer,
+                        qOrder.status,
+                        qOrder.createTime,
+                        qUser.username,
+                        qUser.phone,
+                        qUser.email,
+                        qAddress.addr
+                )
+        ).from(qOrder)
+                .leftJoin(qUser).on(qOrder.userId.eq(qUser.uid))
+                .leftJoin(qAddress).on(qUser.uid.eq(qAddress.uid)
+                        .and(qAddress.defaultStatus.eq(1)))
+                .where(builder)
+                .orderBy(qOrder.createTime.desc())
+                .fetch();
+        System.out.println(orders);
+
+        List<String> orderListId = new ArrayList<>();
+        orders.forEach(orderListVO -> {
+            orderListId.add(orderListVO.getOrderId());
+            // 设置订单总价 总价 = 快递费+商品费用
+            orderListVO.setOrderMoney(new BigDecimal(0)
+                    .add(orderListVO.getDespatchMoney()
+                            .add(orderListVO.getOrderAmount())));
+            orderListVO.setOrderInfoVOS(new ArrayList<>());
+        });
+
+
+        // 查询订单详情
+        QOrderDetails qOrderDetails = QOrderDetails.orderDetails;
+        QGoods qGoods = QGoods.goods;
+        List<OrderInfoVO> orderInfoVOS = queryFactory.select(Projections.bean(
+                OrderInfoVO.class,
+                qOrderDetails.odId,
+                qOrderDetails.orderId,
+                qOrderDetails.number,
+                QGoods.goods,
+                qOrderDetails.transactionPrice
+        ))
+                .from(qOrderDetails)
+                .join(qGoods)
+                .on(qGoods.goodsId.eq(qOrderDetails.goodsId))
+                .where(qOrderDetails.orderId.in(orderListId))
+                .orderBy(qOrderDetails.odId.desc())
+                .fetch();
+        orders.forEach(orderListVO -> {
+            orderInfoVOS.forEach(orderInfoVO -> {
+                if (orderInfoVO.getOrderId().equals(orderListVO.getOrderId())) {
+
+                    orderInfoVO.setGoods(
+                            getGoodsList(
+                                    orderInfoVO.getGoods()));
+
+                    orderListVO.getOrderInfoVOS().add(orderInfoVO);
+                }
+            });
+        });
+
+
+        return orders.get(0);
+    }
+
     private Goods getGoodsList(Goods goods) {
         goods.setCreateTime(null);
         goods.setContent(null);

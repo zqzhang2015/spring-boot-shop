@@ -12,6 +12,8 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 20MB
+  freemarker:
+    template-loader-path: classpath:/templates/
 server:
   port: 8082
 
@@ -24,4 +26,3 @@ app:
       pictures: /Users/lhr/Desktop/shop/pictures_upload/
     home:
       pictures: /Users/lhr/Desktop/shop/home_upload/
-

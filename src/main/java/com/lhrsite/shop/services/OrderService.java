@@ -24,5 +24,5 @@ public interface OrderService {
 
     List<OrderListVO> orderListByUser(String token, long page, long pageSize) throws ErpException;
     PageVO<OrderListVO> list(String token, long page, long pageSize) throws ErpException;
-
+    OrderListVO order(String orderId);
 }

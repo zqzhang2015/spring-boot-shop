@@ -1,6 +1,7 @@
 package com.lhrsite.shop.services.impl;
 
 import com.lhrsite.shop.VO.GoodsListVO;
+import com.lhrsite.shop.VO.GoodsPullDown;
 import com.lhrsite.shop.VO.PageVO;
 import com.lhrsite.shop.entity.*;
 import com.lhrsite.shop.repository.GoodsRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import java.nio.file.OpenOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -110,5 +112,20 @@ public class GoodsServiceImpl extends BaseServiceImpl implements GoodsService {
     public Goods getById(String goodsId) {
         Optional<Goods> goodsOptional = goodsRepository.findById(goodsId);
         return goodsOptional.orElse(null);
+    }
+
+    @Override
+    public List<GoodsPullDown> pullDown(String title) {
+        QGoods qGoods = QGoods.goods;
+
+        return queryFactory.select(
+                Projections.bean(
+                        GoodsPullDown.class,
+                        qGoods.goodsId,
+                        qGoods.title
+                )
+        ).from(qGoods)
+                .where(qGoods.title.like("%" + title + "%"))
+                .fetch();
     }
 }

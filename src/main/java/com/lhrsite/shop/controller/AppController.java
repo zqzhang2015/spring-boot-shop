@@ -41,22 +41,23 @@ public class AppController {
 
     @GetMapping("/picture")
     public String getPicture(){
-        resultVO.setData(JSON.toJSONString(appService.getPicture()));
+        resultVO.setData(appService.getPicture());
         return JSON.toJSONString(resultVO);
     }
 
     @GetMapping("/link")
     public String getLink(){
-        resultVO.setData(JSON.toJSONString(appService.getLink()));
+        resultVO.setData(appService.getLink());
         return JSON.toJSONString(resultVO);
     }
-    @GetMapping("/save")
-    public void edit(String link, String picture, String token) throws ErpException {
+    @PostMapping("/save")
+    public String edit(String link, String picture, String token) throws ErpException {
         App app = new App();
         app.setId(1);
         app.setLink(link);
         app.setPicture(picture);
         appService.edit(app, token);
+        return JSON.toJSONString(resultVO);
     }
 
     @RequestMapping(value = "/picturesUpload", method = RequestMethod.POST)

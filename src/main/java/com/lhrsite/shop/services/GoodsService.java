@@ -1,8 +1,11 @@
 package com.lhrsite.shop.services;
 
 import com.lhrsite.shop.VO.GoodsListVO;
+import com.lhrsite.shop.VO.GoodsPullDown;
 import com.lhrsite.shop.VO.PageVO;
 import com.lhrsite.shop.entity.Goods;
+
+import java.util.List;
 
 public interface GoodsService {
 
@@ -14,6 +17,8 @@ public interface GoodsService {
     Goods updateGoods(Goods goods);
 
     Goods getById(String goodsId);
+
+    List<GoodsPullDown> pullDown(String title);
 
 
 

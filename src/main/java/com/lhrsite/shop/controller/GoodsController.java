@@ -57,6 +57,15 @@ public class GoodsController {
         );
         return JSON.toJSONString(resultVO);
     }
+    @PostMapping("/pullDown")
+    public String pullDown(@RequestParam(required = false, defaultValue = "") String title){
+        resultVO.setData(
+                JSON.toJSONString(
+                        goodsService.pullDown(title)
+                )
+        );
+        return JSON.toJSONString(resultVO);
+    }
 
 
     @PostMapping("/info")
@@ -100,11 +109,6 @@ public class GoodsController {
         resultVO.setData(JSON.toJSONString(goodsService.addGoods(goods)));
         return JSON.toJSONString(resultVO);
     }
-
-
-
-
-
 
     @RequestMapping(value = "/coverUpload", method = RequestMethod.POST)
     public String coverUpload(@RequestParam(value = "file") MultipartFile file)

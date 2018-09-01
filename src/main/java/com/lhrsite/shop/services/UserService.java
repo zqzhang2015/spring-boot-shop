@@ -42,6 +42,7 @@ public interface UserService {
     UserVO findUserById(Integer userId, boolean showPhoneNumber) throws ErpException;
 
     User findById(Integer userId);
+    User findByPhone(String phone);
 
     User addUser(User user) throws ErpException;
 

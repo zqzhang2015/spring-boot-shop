@@ -88,11 +88,18 @@ public class BuyCarServiceImpl extends BaseServiceImpl implements BuyCarService 
     @Override
     public BuyCar addBuyCar(String token, String goodsId, Integer number) {
         User user = userService.tokenGetUser(token);
-        BuyCar buyCar = new BuyCar();
-        buyCar.setUserId(user.getUid());
-        buyCar.setGoodsId(goodsId);
-        buyCar.setNumber(number);
-        buyCar.setId(createBuyCarId());
+
+        BuyCar buyCar = buyCarReository.findByUserIdAndGoodsId(user.getUid(), goodsId);
+        if (buyCar != null){
+            buyCar.setNumber(buyCar.getNumber() + number);
+        }else{
+            buyCar = new BuyCar();
+            buyCar.setUserId(user.getUid());
+            buyCar.setGoodsId(goodsId);
+            buyCar.setNumber(number);
+            buyCar.setId(createBuyCarId());
+        }
+
         return addBuyCar(buyCar);
     }
 

@@ -54,6 +54,8 @@ public enum ErrEumn {
     PASSWORD_NOT6(-100030, "密码不能少于6位"),
     NOT_ADMIN(-100031, "只有管理员才能登录后台"),
     ONLY_ADMIN_CAN_DO(-100032, "只有管理员才能进行操作！"),
+    SEND_MESSAGE_ERROR(-100033, "发送短信验证码失败！"),
+    AUTH_CODE_ERROR(-100034, "验证码错误！"),
 
     ;
 

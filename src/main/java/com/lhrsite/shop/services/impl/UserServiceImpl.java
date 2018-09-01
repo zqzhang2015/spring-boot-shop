@@ -193,6 +193,15 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService  {
     }
 
     @Override
+    public User findByPhone(String phone) {
+        QUser qUser = QUser.user;
+
+        return queryFactory.selectFrom(qUser)
+                .where(qUser.phone.eq(phone))
+                .fetchOne();
+    }
+
+    @Override
     public User addUser(User user) throws ErpException {
 
         phoneIsExist(user.getPhone());
